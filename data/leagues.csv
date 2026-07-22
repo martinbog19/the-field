@@ -1,6 +1,9 @@
 league_name,kalshi_ticker,polymarket_slug,end_date
 NBA,kxnba-27,nba-2027-champion,2027-06-01
 NHL,kxnhl-27,nhl-2027-champion-20260612185656162,2027-05-01
+NFL,kxsb-27,big-game-champion-2027,2027-02-01
+MLB,kxmlb-26,mlb-world-series-champion-2026,2026-10-01
+WNBA,kxwnba-26,wnba-2026-champion-464,2026-10-01
 Premier League,kxpremierleague-27,epl-2027-champion-20260701200428749,2027-04-01
 US Open Men,kxatp-26uso,2026-mens-us-open-winner-tennis,2026-09-01
 US Open Women,kxwta-26uso,2026-womens-us-open-winner-tennis,2026-09-01

@@ -11,22 +11,27 @@ st.title("The field: Live tracking")
 tab_main, tab_xp = st.tabs(["Live odds", "xPoints"])
 
 with tab_main:
-    settings = st.columns([1, 2, 2, 1])
+    st.info("Page under construction...")
+    settings = st.columns([2, 4, 5, 2])
     columns = st.columns(3)
+
+
+leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
+draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
 
 with settings[0]:
     odds_provider = st.pills("Odds source", ["Kalshi", "Polymarket"], default="Kalshi", required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
+    fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
+    market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
 
 with settings[1]:
     selected_players = st.pills("Players", ["Krish", "Lucas", "Martin", "Thomas", "Tommy"], key="players_pills", selection_mode="multi")
 
 with settings[2]:
-    hide_unpicked = st.toggle("Hide unpicked teams/players", value=True)
+    selected_leagues = st.pills("Leagues", sorted(leagues["league_name"].tolist()), key="leagues_pills", selection_mode="multi")
 
-fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
-market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
-leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
-draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
+with settings[3]:
+    hide_unpicked = st.toggle("Hide unpicked teams/players", value=True)
 
 with st.spinner(f"Fetching {odds_provider} odds..."):
     odds = []
@@ -50,8 +55,11 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
 
 # st.dataframe(odds_and_picks)
 
-
+count = 0
 for i, league in leagues.iterrows():
+
+    if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
+        continue
 
     picks = odds_and_picks.copy()[odds_and_picks["league"] == league["league_name"]].reset_index(drop=True)
 
@@ -61,7 +69,7 @@ for i, league in leagues.iterrows():
 
     picks = picks.sort_values(["prob", "team"], ascending=[False, True])
 
-    with columns[i % 3]:
+    with columns[count % 3]:
 
         container = st.container(height=500, gap="xxsmall")
         with container:
@@ -96,6 +104,8 @@ for i, league in leagues.iterrows():
                 with prob_col:
                     prob = f"{row['prob']:.1f}%"
                     st.write(prob)
+    count += 1
+
 
 with tab_xp:
     st.info("Page under construction...")
