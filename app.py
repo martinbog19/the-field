@@ -4,14 +4,18 @@ from datetime import datetime
 
 from src.api import get_kalshi_data, get_polymarket_data
 
-st.set_page_config(page_title="The Field", page_icon="🏈", layout="wide")
+st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
-st.title("Sports Draft")
+st.title("The field: Live tracking")
 
-settings = st.columns([1, 2, 2, 1])
+tab_main, tab_xp = st.tabs(["Live odds", "xPoints"])
+
+with tab_main:
+    settings = st.columns([1, 2, 2, 1])
+    columns = st.columns(3)
 
 with settings[0]:
-    odds_provider = st.pills("Odds source", ["Kalshi", "Polymarket"], default="Kalshi", required=True, key="odds_pills")
+    odds_provider = st.pills("Odds source", ["Kalshi", "Polymarket"], default="Kalshi", required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
 
 with settings[1]:
     selected_players = st.pills("Players", ["Krish", "Lucas", "Martin", "Thomas", "Tommy"], key="players_pills", selection_mode="multi")
@@ -46,7 +50,6 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
 
 # st.dataframe(odds_and_picks)
 
-columns = st.columns(3)
 
 for i, league in leagues.iterrows():
 
@@ -94,9 +97,12 @@ for i, league in leagues.iterrows():
                     prob = f"{row['prob']:.1f}%"
                     st.write(prob)
 
-``
-xp = odds_and_picks.groupby("player_name")["prob"].sum().reset_index()
-xp = xp[xp["player_name"] != "--"]
-xp["prob"] = (xp["prob"] / 100).round(2)
+with tab_xp:
+    st.info("Page under construction...")
+    xp = odds_and_picks.groupby("player_name")["prob"].sum().sort_values(ascending=False).reset_index()
+    xp = xp[xp["player_name"] != "--"]
+    xp["prob"] = (xp["prob"] / 100).round(2)
 
-st.dataframe(xp)
+    for _, row in xp.iterrows():
+        #Horizontal metric display
+        st.metric(label=row["player_name"], value=f"{row['prob']:.2f}")
