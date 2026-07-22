@@ -1,6 +1,8 @@
 import requests
 import pandas as pd
 
+class NotFoundError(Exception):
+    pass
 
 def get_kalshi_data(event_ticker):
 
@@ -8,12 +10,11 @@ def get_kalshi_data(event_ticker):
     url = f"https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker={event_ticker}"
     response = requests.get(url)
 
-    try:
-        markets = response.json()['markets']
-    except (KeyError, ValueError):
-        markets = []
+    markets = response.json()["markets"]
+    if len(markets) == 0:
+        raise NotFoundError(f"No markets found for event ticker: {event_ticker}")
 
-    teams, probs = [], []
+    teams, probs, tickers = [], [], []
     for market in markets:
 
         team = market["yes_sub_title"].strip()
@@ -23,11 +24,13 @@ def get_kalshi_data(event_ticker):
         bid_price = float(market["previous_yes_bid_dollars"])
         prob = 100 * (ask_price + bid_price) / 2 if (ask_price > 0 and bid_price > 0) else 0
         probs.append(prob)
+        tickers.append(market["ticker"])
 
     df = pd.DataFrame(
         {
             "team": teams,
-            "prob": probs
+            "prob": probs,
+            "market_ticker": tickers,
         }
     )
     df["prob"] = 100 * df["prob"] / df["prob"].sum()
@@ -42,9 +45,9 @@ def get_polymarket_data(event_slug):
     response = requests.get(url)
 
     try:
-        markets = response.json()['markets']
+        markets = response.json()["markets"]
     except (KeyError, ValueError):
-        markets = []
+        raise NotFoundError(f"Failed to fetch markets for event slug: {event_slug}")
 
     teams, probs = [], []
     for market in markets:
@@ -52,8 +55,8 @@ def get_polymarket_data(event_slug):
         team = market["groupItemTitle"].strip()
         teams.append(team)
 
-        ask_price = float(market["bestAsk"])
-        bid_price = float(market["bestBid"])
+        ask_price = float(market.get("bestAsk", 0.0))
+        bid_price = float(market.get("bestBid", 0.0))
         prob = 100 * (ask_price + bid_price) / 2 if (ask_price > 0 and bid_price > 0) else 0
         probs.append(prob)
 
