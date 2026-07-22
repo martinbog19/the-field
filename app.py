@@ -94,7 +94,7 @@ for i, league in leagues.iterrows():
                     prob = f"{row['prob']:.1f}%"
                     st.write(prob)
 
-
+``
 xp = odds_and_picks.groupby("player_name")["prob"].sum().reset_index()
 xp = xp[xp["player_name"] != "--"]
 xp["prob"] = (xp["prob"] / 100).round(2)
