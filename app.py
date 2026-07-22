@@ -21,8 +21,8 @@ with settings[2]:
 
 fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
 market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
-leagues = pd.read_csv("metadata/leagues.csv").sort_values("end_date").reset_index(drop=True)
-draft = pd.read_csv("Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
+leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
+draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
 
 with st.spinner(f"Fetching {odds_provider} odds..."):
     odds = []
