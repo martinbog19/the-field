@@ -1,0 +1,12 @@
+[theme]
+primaryColor = "#15eb80"
+backgroundColor = "#0F0F13"
+secondaryBackgroundColor = "#1A1A24"
+textColor = "#F0EEF6"
+font = "Space Grotesk:https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
+
+[server]
+headless = true                   # cleaner startup, no browser warning
+
+[client]
+showSidebarNavigation = false     # hides auto-generated page nav if you add pages later

@@ -1,0 +1,176 @@
+pick,round,player_name,team,league
+1,1,Thomas,Tadej Pogacar,Tour de France
+2,1,Lucas,Jannik Sinner,US Open Men
+3,1,Tommy,Luke Littler,World Darts Championship
+4,1,Krish,France,Six Nations
+5,1,Martin,Minnesota Lynx,WNBA
+6,2,Martin,LA Dodgers,MLB
+7,2,Krish,Arsenal,Premier League
+8,2,Tommy,New York Liberty,WNBA
+9,2,Lucas,San Antonio Spurs,NBA
+10,2,Thomas,Aryna Sabalenka,US Open Women
+11,3,Thomas,The field,March Madness
+12,3,Lucas,Las Vegas Aces,WNBA
+13,3,Tommy,Ireland,Six Nations
+14,3,Krish,Kimi Antonelli,Abu Dhabi Grand Prix
+15,3,Martin,OKC Thunder,NBA
+16,4,Martin,George Russell,Abu Dhabi Grand Prix
+17,4,Krish,The field,US Open Women
+18,4,Tommy,Man City,Premier League
+19,4,Lucas,England,Six Nations
+20,4,Thomas,LA Rams,NFL
+21,5,Thomas,Florida Panthers,NHL
+22,5,Lucas,New York Yankees,MLB
+23,5,Tommy,The field,College Football
+24,5,Krish,Lewis Hamilton,Abu Dhabi Grand Prix
+25,5,Martin,Carlos Alcaraz,US Open Men
+26,6,Martin,Luke Humphries,World Darts Championship
+27,6,Krish,The field,World Darts Championship
+28,6,Tommy,Iga Swiatek,US Open Women
+29,6,Lucas,Coco Gauff,US Open Women
+30,6,Thomas,Bayern Munich,Champions League
+31,7,Thomas,Notre Dame,College Football
+32,7,Lucas,Duke,March Madness
+33,7,Tommy,Arsenal,Champions League
+34,7,Krish,Remco Evenepoel,Tour de France
+35,7,Martin,Ohio State,College Football
+36,8,Martin,Barcelona,Champions League
+37,8,Krish,Liverpool,Premier League
+38,8,Tommy,Atlanta Braves,MLB
+39,8,Lucas,Michael van Gerwen,World Darts Championship
+40,8,Thomas,Elena Rybakina,US Open Women
+41,9,Thomas,New York Knicks,NBA
+42,9,Lucas,Miami Heat,NBA
+43,9,Tommy,The field,NHL
+44,9,Krish,Jonas Vingegaard,Tour de France
+45,9,Martin,Carolina Hurricanes,NHL
+46,10,Martin,The field,NFL
+47,10,Krish,Colorado Avalanche,NHL
+48,10,Tommy,Philadelphia Phillies,MLB
+49,10,Lucas,Man United,Premier League
+50,10,Thomas,Charles Leclerc,Abu Dhabi Grand Prix
+51,11,Thomas,The field,US Open Men
+52,11,Lucas,Texas,College Football
+53,11,Tommy,Real Madrid,Champions League
+54,11,Krish,Florida,March Madness
+55,11,Martin,PSG,Champions League
+56,12,Martin,Max Verstappen,Abu Dhabi Grand Prix
+57,12,Krish,Gian van Veen,World Darts Championship
+58,12,Tommy,Seattle Seahawks,NFL
+59,12,Lucas,Buffalo Bills,NFL
+60,12,Thomas,Chelsea,Premier League
+61,13,Thomas,Montreal Canadiens,NHL
+62,13,Lucas,Milwaukee Brewers,MLB
+63,13,Tommy,Michigan,March Madness
+64,13,Krish,Edmonton Oilers,NHL
+65,13,Martin,U Conn,March Madness
+66,14,Martin,Atlanta Dream,WNBA
+67,14,Krish,Golden State Valkyries,WNBA
+68,14,Tommy,Boston Celtics,NBA
+69,14,Lucas,Las Vegas Golden Knights,NHL
+70,14,Thomas,Baltimore Ravens,NFL
+71,15,Thomas,The field,MLB
+72,15,Lucas,U Miami,College Football
+73,15,Tommy,Oregon,College Football
+74,15,Krish,Scotland,Six Nations
+75,15,Martin,Indiana,College Football
+76,16,Martin,Alexander Zverev,US Open Men
+77,16,Krish,Kansas City Chiefs,NFL
+78,16,Tommy,Novak Djokovic,US Open Men
+79,16,Lucas,Illinois,March Madness
+80,16,Thomas,Paul Seixas,Tour de France
+81,17,Thomas,Man City,Champions League
+82,17,Lucas,The field,Tour de France
+83,17,Tommy,Isaac del Toro,Tour de France
+84,17,Krish,The field,NBA
+85,17,Martin,Denver Nuggets,NBA
+86,18,Martin,Gerwyn Price,World Darts Championship
+87,18,Krish,Indiana Fever,WNBA
+88,18,Tommy,Oscar Piastri,Abu Dhabi Grand Prix
+89,18,Lucas,Lando Norris,Abu Dhabi Grand Prix
+90,18,Thomas,Seattle Mariners,MLB
+91,19,Thomas,Georgia,College Football
+92,19,Lucas,Naomi Osaka,US Open Women
+93,19,Tommy,Golden State Warriors,NBA
+94,19,Krish,Liverpool,Champions League
+95,19,Martin,Mirra Andreeva,US Open Women
+96,20,Martin,Tamba Bay Lightning,NHL
+97,20,Krish,LSU,College Football
+98,20,Tommy,Arizona,March Madness
+99,20,Lucas,Felix Auger-Aliassime,US Open Men
+100,20,Thomas,Daniil Medvedev,US Open Men
+101,21,Thomas,Cleveland Cavaliers,NBA
+102,21,Lucas,New England Patriots,NFL
+103,21,Tommy,Philadelphia Eagles,NFL
+104,21,Krish,San Fransisco 49ers,NFL
+105,21,Martin,Tamba Bay Rays,MLB
+106,22,Martin,Michigan St,March Madness
+107,22,Krish,Texas,March Madness
+108,22,Tommy,Flavio Cobolli,US Open Men
+109,22,Lucas,The field,Abu Dhabi Grand Prix
+110,22,Thomas,Dallas Wings,WNBA
+111,23,Thomas,Wessel Nijman,World Darts Championship
+112,23,Lucas,Minnesota Timberwolves,NBA
+113,23,Tommy,Inter Milan,Champions League
+114,23,Krish,Detroit Lions,NFL
+115,23,Martin,Minnesota Wild,NHL
+116,24,Martin,Cincinnati Bengals,NFL
+117,24,Krish,Dallas Stars,NHL
+118,24,Tommy,The field,Premier League
+119,24,Lucas,Dallas Cowboys,NFL
+120,24,Thomas,The field,Champions League
+121,25,Thomas,Isaack Hadjar,Abu Dhabi Grand Prix
+122,25,Lucas,Philadelphia 76ers,NBA
+123,25,Tommy,Alabama,College Football
+124,25,Krish,Washington Capitals,NHL
+125,25,Martin,Jessica Pegula,US Open Women
+126,26,Martin,Detroit Pistons,NBA
+127,26,Krish,Boston Red Sox,MLB
+128,26,Tommy,Toronto Raptors,NBA
+129,26,Lucas,Atlanta Hawks,NBA
+130,26,Thomas,Tennessee,March Madness
+131,27,Thomas,Chicago Cubs,MLB
+132,27,Lucas,New Jersey Devils,NHL
+133,27,Tommy,Houston Astros,MLB
+134,27,Krish,Juan Ayuso,Tour de France
+135,27,Martin,Texas A&M,College Football
+136,28,Martin,Man United,Champions League
+137,28,Krish,Amanda Anisimova,US Open Women
+138,28,Tommy,Jasmin Paolini,US Open Women
+139,28,Lucas,Arthur Fils,US Open Men
+140,28,Thomas,Buffalo Sabres,NHL
+141,29,Thomas,Zizou Bergs,US Open Men
+142,29,Lucas,Anaheim Ducks,NHL
+143,29,Tommy,The field,WNBA
+144,29,Krish,LA Chargers,NFL
+145,29,Martin,Aston Villa,Premier League
+146,30,Martin,Taylor Fritz,US Open Men
+147,30,Krish,San Jose Sharks,NHL
+148,30,Tommy,Green Bay Packers,NFL
+149,30,Lucas,Houston Texans,NFL
+150,30,Thomas,Indiana Pacers,NBA
+151,31,Thomas,Ottawa Senators,NHL
+152,31,Lucas,USC,College Football
+153,31,Tommy,Kansas,March Madness
+154,31,Krish,Denver Broncos,NFL
+155,31,Martin,Toronto Maple Leafs,NHL
+156,32,Martin,Houston,March Madness
+157,32,Krish,Texas Tech,College Football
+158,32,Tommy,Toronto Blue Jays,MLB
+159,32,Lucas,Arkansas,March Madness
+160,32,Thomas,Marta Kostyuk,US Open Women
+161,33,Thomas,Texas Rangers,MLB
+162,33,Lucas,Gonzaga,March Madness
+163,33,Tommy,LA Lakers,NBA
+164,33,Krish,Louisville,March Madness
+165,33,Martin,Pierre Gasly,Abu Dhabi Grand Prix
+166,34,Martin,Atletico Madrid,Champions League
+167,34,Krish,Florian Lipowitz,Tour de France
+168,34,Tommy,Pittsburgh Steelers,NFL
+169,34,Lucas,Kentucky,March Madness
+170,34,Thomas,Newcastle,Premier League
+171,35,Thomas,Wales,Six Nations
+172,35,Lucas,Florida,College Football
+173,35,Tommy,Italy,Six Nations
+174,35,Krish,UCLA,March Madness
+175,35,Martin,Karolina Muchova,US Open Women
