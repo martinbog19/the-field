@@ -6,6 +6,9 @@ from datetime import datetime
 
 from src.api import get_kalshi_data, get_polymarket_data, NotFoundError
 
+from utils.map.kalshi import name_map as nm_kalshi
+from utils.map.polymarket import name_map as nm_polymarket
+
 st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
 st.title("The field: Live tracking")
@@ -24,6 +27,7 @@ with settings[0]:
     odds_provider = st.pills("Odds source", ["Kalshi", "Polymarket"], default="Kalshi", required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
     fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
     market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
+    name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
 
 with settings[1]:
     selected_players = st.pills("Players", ["Krish", "Lucas", "Martin", "Thomas", "Tommy"], key="players_pills", selection_mode="multi")
@@ -42,6 +46,7 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
             df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
             df = df[df["prob"] > 0]
             df["league"] = league["league_name"]
+            df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
         except NotFoundError as e:
             not_found_leagues.append(league["league_name"])
             continue
@@ -100,8 +105,9 @@ for i, league in leagues.iterrows():
 
             tm_col, pick_col, prob_col = st.columns([2, 1, 1])
             for _, row in picks.iterrows():
+                color = "#15eb80" if row["team"] == "The field" else "white"
                 with tm_col:
-                    st.write(row["team"])
+                    st.markdown(f"<span style='color:{color}'>{row['team']}</span>", unsafe_allow_html=True)
                 with pick_col:
                     # pick_str = f" {row['player_name']} <sup>#{int(row['pick'])}</sup>" if not pd.isna(row['pick']) else "--"
                     # pick_str = f"<sup>#{int(row['pick'])}</sup>" if not pd.isna(row['pick']) else ""
