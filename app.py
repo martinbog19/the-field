@@ -75,7 +75,7 @@ for i, league in leagues.iterrows():
         field_idx = picks.query("team == 'The field'").index[0]
         picks.at[field_idx, "prob"] = field_odds
 
-    picks = picks.sort_values(["prob", "team"], ascending=[False, True])
+    picks = picks.sort_values(["prob", "pick"], ascending=[False, True])
 
     with columns[count % 3]:
 

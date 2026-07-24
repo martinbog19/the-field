@@ -15,5 +15,8 @@ name_map = {
         "USC Trojans": "USC",
         "Florida Gators": "Florida",
         "Michigan Wolverines": "Michigan",
+    },
+    "NHL": {
+        "Montreal Canadiens": "Montréal Canadiens",
     }
 }

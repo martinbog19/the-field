@@ -107,12 +107,20 @@ name_map = {
         "Toronto": "Toronto Blue Jays",
         "Washington": "Washington Nationals",
     },
-    "NHL": {
-        "Vegas Golden Knights": "Las Vegas Golden Knights",
-    },
+    # "NHL": {
+    #     "Vegas Golden Knights": "Las Vegas Golden Knights",
+    # },
     "College Football": {
         "Ohio St.": "Ohio State",
         "Penn St.": "Penn State",
         "Miami (FL)": "U Miami"
+    },
+    "Abu Dhabi Grand Prix": {
+        "Andrea Kimi Antonelli": "Kimi Antonelli"
+    },
+    "Champions League": {
+        "PSG": "Paris Saint-Germain",
+        "Atletico": "Atlético Madrid",
+        "Inter": "Inter Milan"
     }
 }
