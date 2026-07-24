@@ -4,7 +4,7 @@ pick,round,player_name,team,league
 3,1,Tommy,Luke Littler,World Darts Championship
 4,1,Krish,France,Six Nations
 5,1,Martin,Minnesota Lynx,WNBA
-6,2,Martin,LA Dodgers,MLB
+6,2,Martin,Los Angeles Dodgers,MLB
 7,2,Krish,Arsenal,Premier League
 8,2,Tommy,New York Liberty,WNBA
 9,2,Lucas,San Antonio Spurs,NBA
@@ -13,12 +13,12 @@ pick,round,player_name,team,league
 12,3,Lucas,Las Vegas Aces,WNBA
 13,3,Tommy,Ireland,Six Nations
 14,3,Krish,Kimi Antonelli,Abu Dhabi Grand Prix
-15,3,Martin,OKC Thunder,NBA
+15,3,Martin,Oklahoma City Thunder,NBA
 16,4,Martin,George Russell,Abu Dhabi Grand Prix
 17,4,Krish,The field,US Open Women
-18,4,Tommy,Man City,Premier League
+18,4,Tommy,Manchester City,Premier League
 19,4,Lucas,England,Six Nations
-20,4,Thomas,LA Rams,NFL
+20,4,Thomas,Los Angeles Rams,NFL
 21,5,Thomas,Florida Panthers,NHL
 22,5,Lucas,New York Yankees,MLB
 23,5,Tommy,The field,College Football
@@ -47,19 +47,19 @@ pick,round,player_name,team,league
 46,10,Martin,The field,NFL
 47,10,Krish,Colorado Avalanche,NHL
 48,10,Tommy,Philadelphia Phillies,MLB
-49,10,Lucas,Man United,Premier League
+49,10,Lucas,Manchester United,Premier League
 50,10,Thomas,Charles Leclerc,Abu Dhabi Grand Prix
 51,11,Thomas,The field,US Open Men
 52,11,Lucas,Texas,College Football
 53,11,Tommy,Real Madrid,Champions League
 54,11,Krish,Florida,March Madness
-55,11,Martin,PSG,Champions League
+55,11,Martin,Paris Saint-Germain,Champions League
 56,12,Martin,Max Verstappen,Abu Dhabi Grand Prix
 57,12,Krish,Gian van Veen,World Darts Championship
 58,12,Tommy,Seattle Seahawks,NFL
 59,12,Lucas,Buffalo Bills,NFL
 60,12,Thomas,Chelsea,Premier League
-61,13,Thomas,Montreal Canadiens,NHL
+61,13,Thomas,Montréal Canadiens,NHL
 62,13,Lucas,Milwaukee Brewers,MLB
 63,13,Tommy,Michigan,March Madness
 64,13,Krish,Edmonton Oilers,NHL
@@ -79,7 +79,7 @@ pick,round,player_name,team,league
 78,16,Tommy,Novak Djokovic,US Open Men
 79,16,Lucas,Illinois,March Madness
 80,16,Thomas,Paul Seixas,Tour de France
-81,17,Thomas,Man City,Champions League
+81,17,Thomas,Manchester City,Champions League
 82,17,Lucas,The field,Tour de France
 83,17,Tommy,Isaac del Toro,Tour de France
 84,17,Krish,The field,NBA
@@ -94,17 +94,17 @@ pick,round,player_name,team,league
 93,19,Tommy,Golden State Warriors,NBA
 94,19,Krish,Liverpool,Champions League
 95,19,Martin,Mirra Andreeva,US Open Women
-96,20,Martin,Tamba Bay Lightning,NHL
+96,20,Martin,Tampa Bay Lightning,NHL
 97,20,Krish,LSU,College Football
 98,20,Tommy,Arizona,March Madness
-99,20,Lucas,Felix Auger-Aliassime,US Open Men
+99,20,Lucas,Felix Auger Aliassime,US Open Men
 100,20,Thomas,Daniil Medvedev,US Open Men
 101,21,Thomas,Cleveland Cavaliers,NBA
 102,21,Lucas,New England Patriots,NFL
 103,21,Tommy,Philadelphia Eagles,NFL
-104,21,Krish,San Fransisco 49ers,NFL
-105,21,Martin,Tamba Bay Rays,MLB
-106,22,Martin,Michigan St,March Madness
+104,21,Krish,San Francisco 49ers,NFL
+105,21,Martin,Tampa Bay Rays,MLB
+106,22,Martin,Michigan State,March Madness
 107,22,Krish,Texas,March Madness
 108,22,Tommy,Flavio Cobolli,US Open Men
 109,22,Lucas,The field,Abu Dhabi Grand Prix
@@ -119,7 +119,7 @@ pick,round,player_name,team,league
 118,24,Tommy,The field,Premier League
 119,24,Lucas,Dallas Cowboys,NFL
 120,24,Thomas,The field,Champions League
-121,25,Thomas,Isaack Hadjar,Abu Dhabi Grand Prix
+121,25,Thomas,Isack Hadjar,Abu Dhabi Grand Prix
 122,25,Lucas,Philadelphia 76ers,NBA
 123,25,Tommy,Alabama,College Football
 124,25,Krish,Washington Capitals,NHL
@@ -134,15 +134,15 @@ pick,round,player_name,team,league
 133,27,Tommy,Houston Astros,MLB
 134,27,Krish,Juan Ayuso,Tour de France
 135,27,Martin,Texas A&M,College Football
-136,28,Martin,Man United,Champions League
+136,28,Martin,Manchester United,Champions League
 137,28,Krish,Amanda Anisimova,US Open Women
-138,28,Tommy,Jasmin Paolini,US Open Women
+138,28,Tommy,Jasmine Paolini,US Open Women
 139,28,Lucas,Arthur Fils,US Open Men
 140,28,Thomas,Buffalo Sabres,NHL
 141,29,Thomas,Zizou Bergs,US Open Men
 142,29,Lucas,Anaheim Ducks,NHL
 143,29,Tommy,The field,WNBA
-144,29,Krish,LA Chargers,NFL
+144,29,Krish,Los Angeles Chargers,NFL
 145,29,Martin,Aston Villa,Premier League
 146,30,Martin,Taylor Fritz,US Open Men
 147,30,Krish,San Jose Sharks,NHL
@@ -161,14 +161,14 @@ pick,round,player_name,team,league
 160,32,Thomas,Marta Kostyuk,US Open Women
 161,33,Thomas,Texas Rangers,MLB
 162,33,Lucas,Gonzaga,March Madness
-163,33,Tommy,LA Lakers,NBA
+163,33,Tommy,Los Angeles Lakers,NBA
 164,33,Krish,Louisville,March Madness
 165,33,Martin,Pierre Gasly,Abu Dhabi Grand Prix
-166,34,Martin,Atletico Madrid,Champions League
+166,34,Martin,Atlético Madrid,Champions League
 167,34,Krish,Florian Lipowitz,Tour de France
 168,34,Tommy,Pittsburgh Steelers,NFL
 169,34,Lucas,Kentucky,March Madness
-170,34,Thomas,Newcastle,Premier League
+170,34,Thomas,Newcastle United,Premier League
 171,35,Thomas,Wales,Six Nations
 172,35,Lucas,Florida,College Football
 173,35,Tommy,Italy,Six Nations

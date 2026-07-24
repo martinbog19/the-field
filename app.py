@@ -42,6 +42,9 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
     odds, not_found_leagues = [], []
     for i, league in leagues.iterrows():
 
+        if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
+            continue
+
         try:
             df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
             df = df[df["prob"] > 0]
@@ -79,8 +82,10 @@ for i, league in leagues.iterrows():
         container = st.container(height=500, gap="xxsmall")
         with container:
 
+            # c1, c2 = st.columns([1, 1])
             st.write(league["league_name"])
             st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
+            # c2.image("PL_Logo_Horizontal_RGB_White_HR.png")
             if league["league_name"] in not_found_leagues:
                 st.warning(f"No {odds_provider} odds available for this league.")
                 st.space("xsmall")
