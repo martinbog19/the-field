@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 from datetime import datetime
+import os
 
 from src.api import get_kalshi_data, get_polymarket_data, NotFoundError
 
@@ -13,10 +14,11 @@ st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
 st.title("The field: Live tracking")
 
-tab_main, tab_xp = st.tabs(["Live odds", "xPoints"])
+st.info("🚧 Page under construction...")
+
+tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "Leaderboard", "Draft"])
 
 with tab_main:
-    st.info("🚧 Page under construction...")
     settings = st.columns([2, 4, 5, 2])
     columns = st.columns(3)
 
@@ -24,7 +26,8 @@ leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(dr
 draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
 
 with settings[0]:
-    odds_provider = st.pills("Odds source", ["Kalshi", "Polymarket"], default="Kalshi", required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
+    odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
+    st.session_state["odds_provider"] = odds_provider
     fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
     market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
     name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
@@ -55,7 +58,7 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
             continue
         odds.append(df)
 
-    odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame()
+    odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame(columns=["team", "league", "prob"])
     odds_and_picks = odds.merge(draft, on=["team", "league"], how="outer")
     odds_and_picks["player_name"] = odds_and_picks["player_name"].fillna("--")
     odds_and_picks["prob"] = odds_and_picks["prob"].fillna(0.)
@@ -66,14 +69,18 @@ with st.spinner(f"Fetching {odds_provider} odds..."):
 count = 0
 for i, league in leagues.iterrows():
 
-    if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
+    league_name = league["league_name"]
+
+    if league_name not in selected_leagues and len(selected_leagues) > 0:
         continue
 
-    picks = odds_and_picks.copy()[odds_and_picks["league"] == league["league_name"]].reset_index(drop=True)
-    if league["league_name"] not in not_found_leagues:
-        field_odds = 100 - picks[picks["player_name"] != "--"]["prob"].sum()
+    picks = odds_and_picks.copy()[odds_and_picks["league"] == league_name].reset_index(drop=True)
+    if league_name not in not_found_leagues:
+        field_prob = 100 - picks[picks["player_name"] != "--"]["prob"].sum()
+        field_prob_delta = picks[picks["player_name"] == "--"]["prob_delta"].sum()
         field_idx = picks.query("team == 'The field'").index[0]
-        picks.at[field_idx, "prob"] = field_odds
+        picks.at[field_idx, "prob"] = field_prob
+        picks.at[field_idx, "prob_delta"] = field_prob_delta
 
     picks = picks.sort_values(["prob", "pick"], ascending=[False, True])
 
@@ -82,22 +89,17 @@ for i, league in leagues.iterrows():
         container = st.container(height=500, gap="xxsmall")
         with container:
 
-            # c1, c2 = st.columns([1, 1])
-            st.write(league["league_name"])
-            st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
-            # c2.image("PL_Logo_Horizontal_RGB_White_HR.png")
-            if league["league_name"] in not_found_leagues:
+            c1, c2 = st.columns([3, 1])
+            logo_path = f"assets/logos/{league_name.lower().replace(' ', '_')}.png"
+            if os.path.exists(logo_path):
+                c2.image(logo_path, width="stretch")
+            c1.write(f"**{league['league_name']}**")
+            c1.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
+            if league_name in not_found_leagues:
                 st.warning(f"No {odds_provider} odds available for this league.")
                 st.space("xsmall")
             else:
                 st.space("small")
-#             # try:
-#             #     df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
-#             #     df = df.copy()[df["prob"] > 0]
-#             #     st.space("small")
-#             # except Exception as e:
-#             #     st.error(f"Failed to fetch {odds_provider} odds.")
-#             #     continue
 
             if picks.empty:
                 st.warning(f"No {odds_provider} odds found for this league.")
@@ -108,7 +110,7 @@ for i, league in leagues.iterrows():
             if hide_unpicked:
                 picks = picks[picks["player_name"] != "--"]
 
-            tm_col, pick_col, prob_col = st.columns([2, 1, 1])
+            tm_col, pick_col, prob_col = st.columns([6, 2, 2])
             for _, row in picks.iterrows():
                 color = "#15eb80" if row["team"] == "The field" else "white"
                 with tm_col:
@@ -119,12 +121,23 @@ for i, league in leagues.iterrows():
                     st.write(row['player_name'])
                 with prob_col:
                     prob = f"{row['prob']:.1f}%" if not pd.isna(row['prob']) else "--"
-                    st.write(prob)
+                    # prob_delta = f"{row['prob_delta']:.1f}%" if not pd.isna(row['prob_delta']) else "--"
+                    if row['prob_delta'] >= 0.5:
+                        arrow, color = "▲", "#15eb80"
+                    elif row['prob_delta'] <= -0.5:
+                        arrow, color = "▼", "#eb1515"
+                    else:
+                        arrow, color = "--", "#424242"
+                    # Write the arrow in color and prob without color, but in the same line
+                    st.markdown(f"<span style='color:{color}'>{arrow}</span> {prob}", unsafe_allow_html=True)
     count += 1
 
 
 with tab_xp:
-    st.info("🚧 Page under construction...")
+
+    odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, key="odds_pills_xp")
+    st.session_state["odds_provider"] = odds_provider
+
     xp = odds_and_picks.groupby("player_name")["prob"].sum().sort_values(ascending=False).reset_index()
     xp = xp[xp["player_name"] != "--"]
     xp["prob"] = (xp["prob"] / 100).round(2)
@@ -132,6 +145,14 @@ with tab_xp:
     for _, row in xp.iterrows():
         #Horizontal metric display
         st.metric(label=row["player_name"], value=f"{row['prob']:.2f}")
+
+
+with tab_draft:
+
+    display_draft = draft.copy().rename(columns={"player_name": "Player", "team": "selection"})
+    display_draft.columns = [x.capitalize() for x in display_draft.columns ]
+
+    st.dataframe(display_draft, hide_index=True, use_container_width=True)
 
 
 # st.divider()
