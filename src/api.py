@@ -55,6 +55,8 @@ def get_polymarket_data(event_slug: str, team_ids = None):
     for market in markets:
 
         team = market["groupItemTitle"].strip()
+        if team.startswith("Team ") or team.startswith("Player ") or team == "Other":
+            continue
         teams.append(team)
 
         ask_price = float(market.get("bestAsk", 0.0))

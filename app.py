@@ -16,14 +16,15 @@ st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
 st.title("The field: Live tracking")
 
-st.warning("🚧 Page under construction...")
 
 screen_width = streamlit_js_eval(js_expressions="screen.width", key="SCR")
-st.write(f"Screen width is {screen_width}")
-is_mobile = True#screen_width is not None and screen_width < 640
+is_mobile = screen_width is not None and screen_width < 640
+
+device = "mobile" if is_mobile else "desktop"
+
+st.warning(f"🚧 [{device.upper()}] Page under construction...")
 
 players = ["Krish", "Lucas", "Martin", "Thomas", "Tommy"]
-
 
 leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
 draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
@@ -45,7 +46,7 @@ with tab_main:
         settings = [st.expander(filt, expanded=False, type="compact", key=f"exp_{filt}") for filt in ["Players", "Leagues"]]
     else:
         settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
-    columns = st.columns(3)
+    columns = st.columns(3 if not is_mobile else 1, gap="medium", vertical_alignment="top")
 
 with settings[0]:
     selected_players = st.pills("Players", players, key="players_pills", selection_mode="multi", width="stretch")
@@ -109,7 +110,7 @@ for i, league in leagues.iterrows():
 
     picks = picks.sort_values(["prob", "pick"], ascending=[False, True])
 
-    with columns[count % 3]:
+    with columns[count % (3 if not is_mobile else 1)]:
 
         container = st.container(height="stretch" if is_mobile else 500, gap="xxsmall")
         with container:
