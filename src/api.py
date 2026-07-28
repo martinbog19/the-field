@@ -32,6 +32,7 @@ def get_kalshi_data(event_ticker):
             "prob": probs,
             "prob_delta": 0, # Not implemented yet
             "market_ticker": tickers,
+            "resolved": False, # Not implemented yet
         }
     )
     df["prob"] = 100 * df["prob"] / df["prob"].sum()
@@ -50,7 +51,7 @@ def get_polymarket_data(event_slug):
     except (KeyError, ValueError):
         raise NotFoundError(f"Failed to fetch markets for event slug: {event_slug}")
 
-    teams, probs, prob_deltas, slugs = [], [], [], []
+    teams, probs, prob_deltas, slugs, resolved = [], [], [], [], []
     for market in markets:
 
         team = market["groupItemTitle"].strip()
@@ -64,18 +65,19 @@ def get_polymarket_data(event_slug):
         probs.append(prob)
         prob_delta = float(market.get("oneWeekPriceChange", 0.0))
         prob_deltas.append(prob_delta)
-        slugs.append(event_slug)
+        slugs.append(market["slug"])
+        resolved.append(market.get("umaResolutionStatus", "") == "resolved")
 
     df = pd.DataFrame(
         {
             "team": teams,
             "prob": probs,
             "event_slug": slugs,
+            "resolved": resolved,
         }
     )
     prob_sum = df["prob"].sum()
     df["prob"] = 100 * df["prob"] / prob_sum
     df["prob_delta"] = 100 * pd.Series(prob_deltas) / prob_sum
-
 
     return df

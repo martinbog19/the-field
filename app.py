@@ -16,57 +16,67 @@ st.title("The field: Live tracking")
 
 st.info("🚧 Page under construction...")
 
-tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "Leaderboard", "Draft"])
+players = ["Krish", "Lucas", "Martin", "Thomas", "Tommy"]
 
-with tab_main:
-    settings = st.columns([2, 4, 5, 2])
-    columns = st.columns(3)
 
 leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
 draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
 
+with st.container(horizontal=True, vertical_alignment="bottom"):
+    odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, disabled=True)
+    last_refreshed = st.session_state.get("last_refreshed")
+    last_refreshed_msg = f"(last refreshed: {last_refreshed})" if last_refreshed else ""
+    st.button("↻ Refresh", type="tertiary", help=f"Refresh {odds_provider} data {last_refreshed_msg}", on_click=lambda: st.session_state.clear())
+
+fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
+market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
+name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
+
+tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "xPoints", "Draft"])
+
+with tab_main:
+    settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
+    columns = st.columns(3)
+
 with settings[0]:
-    odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, key="odds_pills", help="Kalshi/Polymarket merge in development...")
-    st.session_state["odds_provider"] = odds_provider
-    fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
-    market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
-    name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
-
-with settings[1]:
-    selected_players = st.pills("Players", ["Krish", "Lucas", "Martin", "Thomas", "Tommy"], key="players_pills", selection_mode="multi")
-
-with settings[2]:
-    selected_leagues = st.pills("Leagues", sorted(leagues["league_name"].tolist()), key="leagues_pills", selection_mode="multi")
-
-with settings[3]:
+    selected_players = st.pills("Players", players, key="players_pills", selection_mode="multi", width="stretch")
     hide_unpicked = st.toggle("Hide unpicked teams/players", value=True)
 
-with st.spinner(f"Fetching {odds_provider} odds..."):
-    odds, not_found_leagues = [], []
-    for i, league in leagues.iterrows():
+with settings[1]:
+    selected_leagues = st.pills("Leagues", sorted(leagues["league_name"].tolist()), key="leagues_pills", selection_mode="multi")
 
-        if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
-            continue
+if "odds_and_picks" not in st.session_state or st.session_state.get("odds_provider") != odds_provider:
+    st.session_state["odds_provider"] = odds_provider
+    with st.spinner(f"Fetching {odds_provider} odds..."):
+        odds, not_found_leagues = [], []
+        for i, league in leagues.iterrows():
 
-        try:
-            df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
-            df = df[df["prob"] > 0]
-            df["league"] = league["league_name"]
-            df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
-        except NotFoundError as e:
-            not_found_leagues.append(league["league_name"])
-            continue
-        odds.append(df)
+            if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
+                continue
 
-    odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame(columns=["team", "league", "prob"])
-    odds_and_picks = odds.merge(draft, on=["team", "league"], how="outer")
-    odds_and_picks["player_name"] = odds_and_picks["player_name"].fillna("--")
-    odds_and_picks["prob"] = odds_and_picks["prob"].fillna(0.)
+            try:
+                df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
+                # df = df[df["prob"] > 0]
+                df["league"] = league["league_name"]
+                df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
+            except NotFoundError as e:
+                not_found_leagues.append(league["league_name"])
+                continue
+            odds.append(df)
 
-    not_found_picks_idx = odds_and_picks[odds_and_picks["league"].isin(not_found_leagues)].index.tolist()
-    odds_and_picks.loc[not_found_picks_idx, "prob"] = None
+        odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame(columns=["team", "league", "prob"])
+        merged = odds.merge(draft, on=["team", "league"], how="outer")
+        merged["player_name"] = merged["player_name"].fillna("--")
+        merged["prob"] = merged["prob"].fillna(0.)
+
+        not_found_picks_idx = merged[merged["league"].isin(not_found_leagues)].index.tolist()
+        merged.loc[not_found_picks_idx, "prob"] = None
+
+        st.session_state["odds_and_picks"] = merged
+        st.session_state["last_refreshed"] = datetime.now().strftime("%H:%M:%S")
 
 count = 0
+odds_and_picks = st.session_state["odds_and_picks"]
 for i, league in leagues.iterrows():
 
     league_name = league["league_name"]
@@ -75,7 +85,8 @@ for i, league in leagues.iterrows():
         continue
 
     picks = odds_and_picks.copy()[odds_and_picks["league"] == league_name].reset_index(drop=True)
-    if league_name not in not_found_leagues:
+    valid_league = picks["prob"].notna().sum() > 0
+    if valid_league:
         field_prob = 100 - picks[picks["player_name"] != "--"]["prob"].sum()
         field_prob_delta = picks[picks["player_name"] == "--"]["prob_delta"].sum()
         field_idx = picks.query("team == 'The field'").index[0]
@@ -95,7 +106,7 @@ for i, league in leagues.iterrows():
                 c2.image(logo_path, width="stretch")
             c1.write(f"**{league['league_name']}**")
             c1.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
-            if league_name in not_found_leagues:
+            if not valid_league:
                 st.warning(f"No {odds_provider} odds available for this league.")
                 st.space("xsmall")
             else:
@@ -125,34 +136,69 @@ for i, league in leagues.iterrows():
                     if row['prob_delta'] >= 0.5:
                         arrow, color = "▲", "#15eb80"
                     elif row['prob_delta'] <= -0.5:
-                        arrow, color = "▼", "#eb1515"
+                        arrow, color = "▼", "#fc0362"
                     else:
                         arrow, color = "--", "#424242"
                     # Write the arrow in color and prob without color, but in the same line
                     st.markdown(f"<span style='color:{color}'>{arrow}</span> {prob}", unsafe_allow_html=True)
     count += 1
 
-
 with tab_xp:
 
-    odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, key="odds_pills_xp")
-    st.session_state["odds_provider"] = odds_provider
+    points = odds_and_picks.copy()
+    points["points"] = points["prob"] / 100 * points["resolved"]
 
-    xp = odds_and_picks.groupby("player_name")["prob"].sum().sort_values(ascending=False).reset_index()
-    xp = xp[xp["player_name"] != "--"]
-    xp["prob"] = (xp["prob"] / 100).round(2)
+    xp = points.groupby("player_name")[["prob", "points", "prob_delta"]].sum().sort_values(["points", "prob"], ascending=False).reset_index()
+    xp = xp[xp["player_name"].isin(players)].reset_index(drop=True)
+    xp["prob"] = xp["prob"] / 100
+    xp["prob_delta"] = xp["prob_delta"] / 100
 
-    for _, row in xp.iterrows():
-        #Horizontal metric display
-        st.metric(label=row["player_name"], value=f"{row['prob']:.2f}")
+    cols = st.columns(len(players), border=False)
+    for i, row in xp.iterrows():
+        with cols[i]:
+            # with st.container(horizontal=True, vertical_alignment="bottom"):
+            st.metric(label=f"{i+1}. **{row['player_name']}**", value=row['prob'], delta=row['prob_delta'] if abs(row['prob_delta']) >= 0.01/2 else None, format="%.2f")
+            n_wins = int(row["points"])
+            if n_wins > 0:
+                with st.expander(f"Wins: {n_wins}", type="compact"):
+                    wins = points.copy()[(points["player_name"] == row["player_name"]) & (points["prob"] > 90)].sort_values("league")
+                    with st.container(horizontal=True, vertical_alignment="center", gap="xsmall"):
+                        for _, win in wins.iterrows():
+                            st.write(win['team'])
+                            st.caption(win['league'])
+
+
+    #     #Horizontal metric display
+    #     st.metric(label=row["player_name"], value=f"{row['prob']:.2f}")
 
 
 with tab_draft:
 
-    display_draft = draft.copy().rename(columns={"player_name": "Player", "team": "selection"})
-    display_draft.columns = [x.capitalize() for x in display_draft.columns ]
+    def _color_prob(val: float, target_hex="#15eb80"):
 
-    st.dataframe(display_draft, hide_index=True, use_container_width=True)
+        if (isinstance(val, str) and not val) or pd.isna(val):
+            return "color: white"
+
+        ratio = float(val) / 50 if float(val) <= 50 else 1
+        target_hex = target_hex.lstrip('#')
+        tr, tg, tb = int(target_hex[0:2], 16), int(target_hex[2:4], 16), int(target_hex[4:6], 16)
+
+        # Interpolate from white (255,255,255) to target
+        r = round(255 + (tr - 255) * ratio)
+        g = round(255 + (tg - 255) * ratio)
+        b = round(255 + (tb - 255) * ratio)
+
+        return f'color: #{r:02x}{g:02x}{b:02x}'
+
+    display_draft = odds_and_picks.copy()[odds_and_picks["player_name"].isin(players)]
+    display_draft = display_draft[["pick", "round", "player_name", "team", "league", "prob"]].sort_values("pick").reset_index(drop=True)
+    display_draft = display_draft.rename(columns={"player_name": "player", "team": "selection", "prob": "live_probability"})
+    display_draft["live_probability"] = display_draft["live_probability"].apply(lambda x: f"{x:.1f}" if not pd.isna(x) else "")
+    display_draft.columns = [x.capitalize().replace("_", " ") for x in display_draft.columns]
+
+    display_draft_styled = display_draft.style.map(_color_prob, subset=["Live probability"])
+
+    st.dataframe(display_draft_styled, hide_index=True, height=1000)
 
 
 # st.divider()
