@@ -14,7 +14,7 @@ st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
 st.title("The field: Live tracking")
 
-st.info("🚧 Page under construction...")
+st.warning("🚧 Page under construction...")
 
 players = ["Krish", "Lucas", "Martin", "Thomas", "Tommy"]
 
@@ -64,7 +64,7 @@ if "odds_and_picks" not in st.session_state or st.session_state.get("odds_provid
                 continue
             odds.append(df)
 
-        odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame(columns=["team", "league", "prob"])
+        odds = pd.concat(odds).reset_index(drop=True) if odds else pd.DataFrame(columns=["team", "league", "prob", "prob_delta", "resolved"])
         merged = odds.merge(draft, on=["team", "league"], how="outer")
         merged["player_name"] = merged["player_name"].fillna("--")
         merged["prob"] = merged["prob"].fillna(0.)
