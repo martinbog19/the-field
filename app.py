@@ -60,9 +60,6 @@ if "odds_and_picks" not in st.session_state or st.session_state.get("odds_provid
             team_ids = pd.read_csv("data/march_madness_espn_team_ids.csv") if use_espn else None
 
             try:
-                st.write(league["league_name"])
-                st.write(fetch_fn_used)
-                st.write(use_espn)
                 df = fetch_fn_used(league[market_id_col_used], team_ids=team_ids).sort_values(by="prob", ascending=False)
                 # df = df[df["prob"] > 0]
                 df["league"] = league["league_name"]
