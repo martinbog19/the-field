@@ -63,7 +63,7 @@ pick,round,player_name,team,league
 62,13,Lucas,Milwaukee Brewers,MLB
 63,13,Tommy,Michigan,March Madness
 64,13,Krish,Edmonton Oilers,NHL
-65,13,Martin,U Conn,March Madness
+65,13,Martin,UConn,March Madness
 66,14,Martin,Atlanta Dream,WNBA
 67,14,Krish,Golden State Valkyries,WNBA
 68,14,Tommy,Boston Celtics,NBA
@@ -104,7 +104,7 @@ pick,round,player_name,team,league
 103,21,Tommy,Philadelphia Eagles,NFL
 104,21,Krish,San Francisco 49ers,NFL
 105,21,Martin,Tampa Bay Rays,MLB
-106,22,Martin,Michigan State,March Madness
+106,22,Martin,Michigan St,March Madness
 107,22,Krish,Texas,March Madness
 108,22,Tommy,Flavio Cobolli,US Open Men
 109,22,Lucas,The field,Abu Dhabi Grand Prix

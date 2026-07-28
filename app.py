@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import os
 
-from src.api import get_kalshi_data, get_polymarket_data, NotFoundError
+from src.api import get_kalshi_data, get_polymarket_data, get_espn_data, NotFoundError
 
 from utils.map.kalshi import name_map as nm_kalshi
 from utils.map.polymarket import name_map as nm_polymarket
@@ -54,8 +54,16 @@ if "odds_and_picks" not in st.session_state or st.session_state.get("odds_provid
             if league["league_name"] not in selected_leagues and len(selected_leagues) > 0:
                 continue
 
+            use_espn = pd.notna(league["espn_endpoint"])
+            fetch_fn_used = get_espn_data if use_espn else fetch_fn
+            market_id_col_used = "espn_endpoint" if use_espn else market_id_col
+            team_ids = pd.read_csv("data/march_madness_espn_team_ids.csv") if use_espn else None
+
             try:
-                df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
+                st.write(league["league_name"])
+                st.write(fetch_fn_used)
+                st.write(use_espn)
+                df = fetch_fn_used(league[market_id_col_used], team_ids=team_ids).sort_values(by="prob", ascending=False)
                 # df = df[df["prob"] > 0]
                 df["league"] = league["league_name"]
                 df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
@@ -195,8 +203,11 @@ with tab_draft:
     display_draft = display_draft.rename(columns={"player_name": "player", "team": "selection", "prob": "live_probability"})
     display_draft["live_probability"] = display_draft["live_probability"].apply(lambda x: f"{x:.1f}" if not pd.isna(x) else "")
     display_draft.columns = [x.capitalize().replace("_", " ") for x in display_draft.columns]
+    display_draft = display_draft.rename(columns={"Live probability": "Live probability (%)"})
+    display_draft["Pick"] = display_draft["Pick"].astype(int)#.apply(lambda x: f"{int(x)}")
+    display_draft["Round"] = display_draft["Round"].astype(int)
 
-    display_draft_styled = display_draft.style.map(_color_prob, subset=["Live probability"])
+    display_draft_styled = display_draft.style.map(_color_prob, subset=["Live probability (%)"])
 
     st.dataframe(display_draft_styled, hide_index=True, height=1000)
 
