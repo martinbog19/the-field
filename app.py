@@ -10,11 +10,17 @@ from src.api import get_kalshi_data, get_polymarket_data, get_espn_data, NotFoun
 from utils.map.kalshi import name_map as nm_kalshi
 from utils.map.polymarket import name_map as nm_polymarket
 
+from streamlit_js_eval import streamlit_js_eval
+
 st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 
 st.title("The field: Live tracking")
 
 st.warning("🚧 Page under construction...")
+
+screen_width = streamlit_js_eval(js_expressions="screen.width", key="SCR")
+st.write(f"Screen width is {screen_width}")
+is_mobile = True#screen_width is not None and screen_width < 640
 
 players = ["Krish", "Lucas", "Martin", "Thomas", "Tommy"]
 
@@ -35,7 +41,10 @@ name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
 tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "xPoints", "Draft"])
 
 with tab_main:
-    settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
+    if is_mobile:
+        settings = [st.expander(filt, expanded=False, type="compact", key=f"exp_{filt}") for filt in ["Players", "Leagues"]]
+    else:
+        settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
     columns = st.columns(3)
 
 with settings[0]:
@@ -102,15 +111,25 @@ for i, league in leagues.iterrows():
 
     with columns[count % 3]:
 
-        container = st.container(height=500, gap="xxsmall")
+        container = st.container(height="stretch" if is_mobile else 500, gap="xxsmall")
         with container:
 
-            c1, c2 = st.columns([3, 1])
             logo_path = f"assets/logos/{league_name.lower().replace(' ', '_')}.png"
-            if os.path.exists(logo_path):
-                c2.image(logo_path, width="stretch")
-            c1.write(f"**{league['league_name']}**")
-            c1.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
+            if is_mobile:
+                if count > 0:
+                    st.divider()
+                with st.container(horizontal=True, horizontal_alignment="distribute", vertical_alignment="center"):
+                    with st.container():
+                        st.write(f"**{league['league_name']}**")
+                        st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
+                    if os.path.exists(logo_path):
+                        st.image(logo_path, width=48)
+            else:
+                c1, c2 = st.columns([3, 1])
+                if os.path.exists(logo_path):
+                    c2.image(logo_path, width="stretch")
+                c1.write(f"**{league['league_name']}**")
+                c1.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
             if not valid_league:
                 st.warning(f"No {odds_provider} odds available for this league.")
                 st.space("xsmall")
@@ -126,26 +145,35 @@ for i, league in leagues.iterrows():
             if hide_unpicked:
                 picks = picks[picks["player_name"] != "--"]
 
-            tm_col, pick_col, prob_col = st.columns([6, 2, 2])
+            if not is_mobile:
+                tm_col, pick_col, prob_col = st.columns([6, 2, 2])
             for _, row in picks.iterrows():
-                color = "#15eb80" if row["team"] == "The field" else "white"
-                with tm_col:
-                    st.markdown(f"<span style='color:{color}'>{row['team']}</span>", unsafe_allow_html=True)
-                with pick_col:
-                    # pick_str = f" {row['player_name']} <sup>#{int(row['pick'])}</sup>" if not pd.isna(row['pick']) else "--"
-                    # pick_str = f"<sup>#{int(row['pick'])}</sup>" if not pd.isna(row['pick']) else ""
-                    st.write(row['player_name'])
-                with prob_col:
-                    prob = f"{row['prob']:.1f}%" if not pd.isna(row['prob']) else "--"
-                    # prob_delta = f"{row['prob_delta']:.1f}%" if not pd.isna(row['prob_delta']) else "--"
-                    if row['prob_delta'] >= 0.5:
-                        arrow, color = "▲", "#15eb80"
-                    elif row['prob_delta'] <= -0.5:
-                        arrow, color = "▼", "#fc0362"
-                    else:
-                        arrow, color = "--", "#424242"
-                    # Write the arrow in color and prob without color, but in the same line
-                    st.markdown(f"<span style='color:{color}'>{arrow}</span> {prob}", unsafe_allow_html=True)
+                team_color = "#15eb80" if row["team"] == "The field" else "white"
+                prob = f"{row['prob']:.1f}%" if not pd.isna(row['prob']) else "--"
+                if row['prob_delta'] >= 0.5:
+                    arrow, delta_color = "▲", "#15eb80"
+                elif row['prob_delta'] <= -0.5:
+                    arrow, delta_color = "▼", "#fc0362"
+                else:
+                    arrow, delta_color = "--" if not is_mobile else "", "#424242"
+                if is_mobile:
+                    # Built as a single flex row (not st.columns) so team/pick/prob stay
+                    # aligned on one line instead of stacking on narrow viewports.
+                    st.markdown(
+                        f"""<div style='display:flex;align-items:center;gap:8px;padding:2px 0;'>
+                        <span style='flex:3;min-width:0;color:{team_color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>{row['team']}</span>
+                        <span style='flex:1;text-align:right;white-space:nowrap;'>{row['player_name']}</span>
+                        <span style='flex:1;text-align:right;white-space:nowrap;'><span style='color:{delta_color}'>{arrow}</span> {prob}</span>
+                        </div>""",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    with tm_col:
+                        st.markdown(f"<span style='color:{team_color}'>{row['team']}</span>", unsafe_allow_html=True)
+                    with pick_col:
+                        st.write(row['player_name'])
+                    with prob_col:
+                        st.markdown(f"<span style='color:{delta_color}'>{arrow}</span> {prob}", unsafe_allow_html=True)
     count += 1
 
 with tab_xp:
@@ -206,7 +234,7 @@ with tab_draft:
 
     display_draft_styled = display_draft.style.map(_color_prob, subset=["Live probability (%)"])
 
-    st.dataframe(display_draft_styled, hide_index=True, height=1000)
+    st.dataframe(display_draft_styled, hide_index=True, width=screen_width)
 
 
 # st.divider()
