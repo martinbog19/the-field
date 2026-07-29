@@ -30,6 +30,9 @@ with odds_refresh_container:
 if "merged" not in st.session_state or st.session_state.get("odds_provider") != odds_provider:
     with odds_refresh_container:
         st.session_state["merged"] = merge_draft_odds(draft, leagues, odds_provider)
+        if "last_refreshed" in st.session_state:
+            st.toast(f"Successfully pulled {odds_provider} data!", duration=3)
+        st.session_state["last_refreshed"] = datetime.now()
         st.session_state["odds_provider"] = odds_provider
 
 
