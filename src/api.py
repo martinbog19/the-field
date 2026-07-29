@@ -1,10 +1,20 @@
+import streamlit as st
 import requests
 import pandas as pd
+
+from .name_maps.kalshi import name_map as nm_kalshi
+from .name_maps.polymarket import name_map as nm_polymarket
+
+
+from time import sleep
 
 class NotFoundError(Exception):
     pass
 
-def get_kalshi_data(event_ticker: str, team_ids = None):
+def get_kalshi_data(event_ticker: str):
+
+    if pd.isna(event_ticker):
+        raise NotFoundError(f"No markets available for event ticker: {event_ticker}")
 
     event_ticker = event_ticker.upper().strip()
     url = f"https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker={event_ticker}"
@@ -20,8 +30,8 @@ def get_kalshi_data(event_ticker: str, team_ids = None):
         team = market["yes_sub_title"].strip()
         teams.append(team)
 
-        ask_price = float(market["previous_yes_ask_dollars"])
-        bid_price = float(market["previous_yes_bid_dollars"])
+        ask_price = float(market["yes_ask_dollars"])
+        bid_price = float(market["yes_bid_dollars"])
         prob = 100 * (ask_price + bid_price) / 2 if (ask_price > 0 and bid_price > 0) else 0
         probs.append(prob)
         tickers.append(market["ticker"])
@@ -40,7 +50,12 @@ def get_kalshi_data(event_ticker: str, team_ids = None):
     return df
 
 
-def get_polymarket_data(event_slug: str, team_ids = None):
+def get_polymarket_data(event_slug: str):
+
+    print(event_slug)
+
+    if pd.isna(event_slug):
+        raise NotFoundError(f"No markets available for event slug: {event_slug}")
     
     event_slug = event_slug.lower().strip()
     url = f"https://gamma-api.polymarket.com/events/slug/{event_slug}"
@@ -83,6 +98,36 @@ def get_polymarket_data(event_slug: str, team_ids = None):
     df["prob_delta"] = 100 * pd.Series(prob_deltas) / prob_sum
 
     return df
+
+
+def fetch_odds_data(leagues: pd.DataFrame, odds_provider: str):
+
+    with st.spinner(f"Fetching {odds_provider} odds...", show_time=True):
+
+        fetch_fn = get_polymarket_data if odds_provider == "Polymarket" else get_kalshi_data
+        market_id_col = "polymarket_slug" if odds_provider == "Polymarket" else "kalshi_ticker"
+        name_map = nm_polymarket if odds_provider == "Polymarket" else nm_kalshi
+
+        odds, not_found_leagues = [], []
+        for _, league in leagues.iterrows():
+
+            try:
+                df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
+                df["league"] = league["league_name"]
+                df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
+            except NotFoundError as e:
+                not_found_leagues.append(league["league_name"])
+                continue
+            odds.append(df)
+
+
+        if odds:
+            return pd.concat(odds).reset_index(drop=True), not_found_leagues
+        else:
+            return pd.DataFrame(columns=["team", "league", "prob", "prob_delta", "resolved"]), not_found_leagues
+
+
+
 
 
 def _american_odds_to_pct(odds: str):

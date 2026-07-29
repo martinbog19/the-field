@@ -122,5 +122,8 @@ name_map = {
         "PSG": "Paris Saint-Germain",
         "Atletico": "Atlético Madrid",
         "Inter": "Inter Milan"
+    },
+    "March Madness": {
+        "Michigan St": "Michigan State",
     }
 }
