@@ -1,11 +1,6 @@
 import pandas as pd
 
-try:
-    from .api import fetch_odds_data
-except Exception as e:
-    import streamlit as st
-    st.error(f"Error importing fetch_odds_data: {e}")
-
+from .api import fetch_odds_data
 
 
 
