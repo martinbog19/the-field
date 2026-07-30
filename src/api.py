@@ -1,12 +1,12 @@
 import streamlit as st
 import requests
-from requests.exceptions import ConnectionError
 import pandas as pd
 import os
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket
 
+REQUEST_TIMEOUT = 10
 
 
 class NotFoundError(Exception):
@@ -20,10 +20,10 @@ def get_kalshi_data(event_ticker: str):
     event_ticker = event_ticker.upper().strip()
     url = f"https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker={event_ticker}"
     try:
-        response = requests.get(url)
-    except ConnectionError:
-        st.error("No connection")
-        st.stop()
+        response = requests.get(url, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise NotFoundError(f"Failed to fetch markets for event ticker {event_ticker}: {e}")
 
     markets = response.json()["markets"]
     if len(markets) == 0:
@@ -63,10 +63,10 @@ def get_polymarket_data(event_slug: str):
     event_slug = event_slug.lower().strip()
     url = f"https://gamma-api.polymarket.com/events/slug/{event_slug}"
     try:
-        response = requests.get(url)
-    except ConnectionError:
-        st.error("No connection")
-        st.stop()
+        response = requests.get(url, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise NotFoundError(f"Failed to fetch markets for event slug {event_slug}: {e}")
 
     try:
         markets = response.json()["markets"]
@@ -155,7 +155,8 @@ def get_espn_data(endpoint: str, team_ids: pd.DataFrame):
 
     endpoint = endpoint.lower().strip()
     url = "https://sports.core.api.espn.com/v2/" + endpoint
-    response = requests.get(url)
+    response = requests.get(url, timeout=REQUEST_TIMEOUT)
+    response.raise_for_status()
 
     data = [x for x in response.json()["items"] if x.get("name", "") == "NCAA(B) - Winner"][0]
     markets = data["futures"][0]["books"]
