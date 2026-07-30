@@ -24,7 +24,7 @@ players = sorted(draft["player_name"].unique().tolist())
 odds_refresh_container = st.container(horizontal=True, vertical_alignment="bottom")
 with odds_refresh_container:
     odds_provider = st.pills("Odds source", ["Polymarket", "Kalshi"], default=st.session_state.get("odds_provider", "Polymarket"), required=True, disabled=False)
-    if st.button("↻ Refresh", key="refresh_odds", type="tertiary", help=f"Refresh {odds_provider} data"):
+    if st.button("↻", key="refresh_odds", type="tertiary", help=f"Refresh {odds_provider} data"):
         st.session_state.pop("merged", None)
 
 if "merged" not in st.session_state or st.session_state.get("odds_provider") != odds_provider:
@@ -36,7 +36,7 @@ if "merged" not in st.session_state or st.session_state.get("odds_provider") != 
         st.session_state["odds_provider"] = odds_provider
 
 
-tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "xPoints", "Draft"])
+tab_main, tab_xp, tab_draft, tab_trends = st.tabs(["Live odds", "xPoints", "Draft", "Trends"])
 
 with tab_main:
 
@@ -153,37 +153,71 @@ with tab_draft:
         is_mobile
     )
 
+with tab_trends:
+    import requests
+    import time
+    import numpy as np
+    import altair as alt
+    if st.session_state.get("odds_provider") == "Kalshi":
+
+        c1, c2, _ = st.columns([2, 1, 4], gap="xsmall", vertical_alignment="bottom")
+
+        merged = st.session_state["merged"].copy()
+        merged = merged[merged["market_ticker"].notna()].sort_values(["league", "team"])
+        merged["team_league"] = merged["team"] + " (" + merged["league"] + ")"
+        ticker_dict = {row["team_league"]: row["market_ticker"] for _, row in merged.iterrows()}
+        teams = c1.multiselect("Select a market", merged["team_league"].tolist())
+        tickers = [ticker_dict.get(team, None) for team in teams]
+
+        @st.dialog(title="Market trend")
+        def _market_trend(tickers: list[str]):
+
+            time_now = int(time.time())
+            time_last_month = int(time.time()) - 30 * 24 * 60 * 60
 
 
+            charts = alt.Chart(pd.DataFrame()).mark_line().encode()
+            for ticker in tickers:
 
+                series_ticker = ticker.split("-")[0]
 
+                url = f"https://external-api.kalshi.com/trade-api/v2/series/{series_ticker}/markets/{ticker}/candlesticks"
 
-# # import requests
+                response = requests.get(
+                    url,
+                    params={
+                        "start_ts": time_last_month,
+                        "end_ts": time_now,
+                        "period_interval": 60,
+                    }
+                )
 
-# # ticker = odds_and_picks.sort_values("prob").iloc[-1]["market_ticker"]
-# # series_ticker = ticker.split("-")[0]
-# # time_now = int(time.time())
-# # time_last_month = int(time.time()) - 30 * 24 * 60 * 60
-# # st.write(time_now)
-    
+                trend = pd.DataFrame(response.json()["candlesticks"]).sort_values("end_period_ts")
 
-# # url = f"https://external-api.kalshi.com/trade-api/v2/series/{series_ticker}/markets/{ticker}/candlesticks"
+                trend["time"] = (trend["end_period_ts"].astype(float) - time_last_month) / (60 * 60 * 24)
+                trend["price"] = trend["price"].apply(lambda x: float(x.get("mean_dollars", np.nan)))
+                trend["price_rolling"] = trend["price"].rolling(24, min_periods=1).mean()
 
-# # response = requests.get(
-# #     url,
-# #     params={
-# #         "start_ts": time_last_month,
-# #         "end_ts": time_now,
-# #         "period_interval": 1440,
-# #     }
-# # )
+                line = (
+                    alt.Chart(trend)
+                    .mark_line(strokeWidth=3)
+                    .encode(x="time", y="price_rolling", color=alt.Color(
+                    legend=alt.Legend(title=ticker),
+                    scale=alt.Scale(range=["#15eb80"])  # keep your custom color
+                ))
+                )
+                charts += line
+                if len(tickers) == 1:
+                    scatter = (
+                        alt.Chart(trend)
+                        .mark_circle(color="white", opacity=0.25)
+                        .encode(x="time", y="price")
+                    )
+                    charts += scatter
 
-# # trend = pd.DataFrame(response.json()["candlesticks"]).sort_values("end_period_ts")
-# # trend["time"] = (trend["end_period_ts"].astype(float) - time_last_month) / (60 * 60 * 24)
-# # trend["price"] = trend["price"].apply(lambda x: float(x["mean_dollars"]))
-# # st.dataframe(trend)
+            st.altair_chart(charts.properties(width="container"), use_container_width=True)
 
-
-# # st.line_chart(trend, x="time", y="price", color="#15eb80")
-
-# # st.popover("Label")
+        if c2.button("Show market trend", key="show_trend", type="primary"):
+           _market_trend(tickers)
+    else:
+        st.warning("Market trends are only available for Kalshi markets.")
