@@ -1,5 +1,5 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
 from ..utils import prob2hex
 
@@ -9,7 +9,7 @@ def render_draft_tab(players, leagues, is_mobile):
     if is_mobile:
         settings = [st.expander(filt, expanded=False, type="compact", key=f"draft_exp_{filt}") for filt in ["Players", "Leagues"]]
     else:
-        with st.expander("Filters", expanded=False, type="compact", key=f"draft_exp_filters"):
+        with st.expander("Filters", expanded=False, type="compact", key="draft_exp_filters"):
             settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
 
     with settings[0]:

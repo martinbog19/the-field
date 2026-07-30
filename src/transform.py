@@ -3,7 +3,6 @@ import pandas as pd
 from .api import fetch_odds_data
 
 
-
 def _compute_field_odds(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df[df["player_name"] == "--"]

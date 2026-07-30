@@ -1,7 +1,8 @@
-import streamlit as st
-import requests
-import pandas as pd
 import os
+
+import pandas as pd
+import requests
+import streamlit as st
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket

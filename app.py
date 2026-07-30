@@ -1,14 +1,14 @@
-import streamlit as st
-import pandas as pd
 import os
 from datetime import datetime
+
+import pandas as pd
+import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
 from src.tabs.draft import render_draft_tab
 from src.tabs.xpoints import render_xpoints_tab
 from src.transform import merge_draft_odds
 from src.utils import prob2hex
-
 
 st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 st.title("The field: Live tracking")
