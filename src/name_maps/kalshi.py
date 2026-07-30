@@ -124,6 +124,6 @@ name_map = {
         "Inter": "Inter Milan"
     },
     "March Madness": {
-        "Michigan St": "Michigan State",
+        "Michigan St.": "Michigan State",
     }
 }

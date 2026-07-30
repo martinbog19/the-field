@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from requests.exceptions import ConnectionError
 import pandas as pd
+import os
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket
@@ -55,8 +56,6 @@ def get_kalshi_data(event_ticker: str):
 
 
 def get_polymarket_data(event_slug: str):
-
-    print(event_slug)
 
     if pd.isna(event_slug):
         raise NotFoundError(f"No markets available for event slug: {event_slug}")
@@ -123,9 +122,15 @@ def fetch_odds_data(leagues: pd.DataFrame, odds_provider: str):
                 df = fetch_fn(league[market_id_col]).sort_values(by="prob", ascending=False)
                 df["league"] = league["league_name"]
                 df["team"] = df["team"].apply(lambda x: name_map.get(league["league_name"], {}).get(x, x))
-            except NotFoundError as e:
-                not_found_leagues.append(league["league_name"])
-                continue
+            except NotFoundError:
+                manual_path = f"data/manual/{league['league_name'].lower().replace(' ', '_')}.csv"
+                if os.path.exists(manual_path):
+                    df = pd.read_csv(manual_path)
+                    df["prob"] = df["prob"] / df["prob"].sum() * 100
+                    df["league"] = league["league_name"]
+                else:
+                    not_found_leagues.append(league["league_name"])
+                    continue
             odds.append(df)
 
 
