@@ -1,12 +1,12 @@
 import streamlit as st
 import requests
+from requests.exceptions import ConnectionError
 import pandas as pd
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket
 
 
-from time import sleep
 
 class NotFoundError(Exception):
     pass
@@ -18,7 +18,11 @@ def get_kalshi_data(event_ticker: str):
 
     event_ticker = event_ticker.upper().strip()
     url = f"https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker={event_ticker}"
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except ConnectionError:
+        st.error("No connection")
+        st.stop()
 
     markets = response.json()["markets"]
     if len(markets) == 0:
@@ -59,7 +63,11 @@ def get_polymarket_data(event_slug: str):
     
     event_slug = event_slug.lower().strip()
     url = f"https://gamma-api.polymarket.com/events/slug/{event_slug}"
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except ConnectionError:
+        st.error("No connection")
+        st.stop()
 
     try:
         markets = response.json()["markets"]
