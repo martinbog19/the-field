@@ -36,7 +36,10 @@ if "merged" not in st.session_state or st.session_state.get("odds_provider") != 
         st.session_state["odds_provider"] = odds_provider
 
 
-tab_main, tab_xp, tab_draft = st.tabs(["Live odds", "xPoints", "Draft"])
+merged = st.session_state["merged"].copy()
+
+
+tab_main, tab_xp, tab_draft, tab_trends = st.tabs(["Live odds", "xPoints", "Draft", "Trends"])
 
 with tab_main:
 
@@ -154,36 +157,22 @@ with tab_draft:
     )
 
 
+with tab_trends:
 
+    merged = st.session_state["merged"].copy().sort_values("prob_delta", ascending=False)
+    merged = merged[merged["prob_delta"].notna() & (merged["player_name"].isin(players))]
 
+    hot = merged.head(3)
+    cold = merged.tail(3).iloc[::-1]
 
-
-# # import requests
-
-# # ticker = odds_and_picks.sort_values("prob").iloc[-1]["market_ticker"]
-# # series_ticker = ticker.split("-")[0]
-# # time_now = int(time.time())
-# # time_last_month = int(time.time()) - 30 * 24 * 60 * 60
-# # st.write(time_now)
-    
-
-# # url = f"https://external-api.kalshi.com/trade-api/v2/series/{series_ticker}/markets/{ticker}/candlesticks"
-
-# # response = requests.get(
-# #     url,
-# #     params={
-# #         "start_ts": time_last_month,
-# #         "end_ts": time_now,
-# #         "period_interval": 1440,
-# #     }
-# # )
-
-# # trend = pd.DataFrame(response.json()["candlesticks"]).sort_values("end_period_ts")
-# # trend["time"] = (trend["end_period_ts"].astype(float) - time_last_month) / (60 * 60 * 24)
-# # trend["price"] = trend["price"].apply(lambda x: float(x["mean_dollars"]))
-# # st.dataframe(trend)
-
-
-# # st.line_chart(trend, x="time", y="price", color="#15eb80")
-
-# # st.popover("Label")
+    col_hot, col_cold, _ = st.columns([1, 1, 2], gap="medium", vertical_alignment="top")
+    with col_hot:
+        st.write("### 🔥 Hot picks")
+        for _, pick in hot.iterrows():
+            prob = f"{pick['prob']:.1f}%" if not pd.isna(pick['prob']) else "--"
+            st.metric(label=f"{pick['player_name']}: **{pick['team']}** ({pick['league']})", value=prob, delta=f"{pick['prob_delta']:+.1f}%")
+    with col_cold:
+        st.write("### ❄️ Cold picks")
+        for _, pick in cold.iterrows():
+            prob = f"{pick['prob']:.1f}%" if not pd.isna(pick['prob']) else "--"
+            st.metric(label=f"{pick['player_name']}: **{pick['team']}** ({pick['league']})", value=prob, delta=f"{pick['prob_delta']:+.1f}%")

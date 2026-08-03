@@ -7,9 +7,9 @@ from .api import fetch_odds_data
 def _compute_field_odds(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df[df["player_name"] == "--"]
-    field_probs = df.groupby("league")["prob"].sum().reset_index()
+    field_probs = df.groupby("league")[["prob", "prob_delta"]].sum().reset_index()
     field_probs["team"] = "The field"
-    field_probs = field_probs.rename(columns={"prob": "field_prob"})
+    field_probs = field_probs.rename(columns={"prob": "field_prob", "prob_delta": "field_prob_delta"})
 
     return field_probs
 
@@ -34,5 +34,6 @@ def merge_draft_odds(draft: pd.DataFrame, leagues: list[str], odds_provider: str
     field_probs = _compute_field_odds(merged)
     merged = merged.merge(field_probs, on=["league", "team"], how="left")
     merged["prob"] = merged["prob"].fillna(merged["field_prob"])
+    merged["prob_delta"] = merged["prob_delta"].fillna(merged["field_prob_delta"])
 
     return merged
