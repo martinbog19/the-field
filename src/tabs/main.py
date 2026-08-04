@@ -29,7 +29,7 @@ def render_main_tab(players, leagues, is_mobile):
     if is_mobile:
         settings = [st.expander(filt, expanded=False, type="compact", key=f"exp_{filt}") for filt in ["Players", "Leagues"]]
     else:
-        settings = st.columns([2, 5, 2], gap="medium", vertical_alignment="top")
+        settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
 
     with settings[0]:
         selected_players = st.pills("Players", players, key="players_pills", selection_mode="multi", width="stretch")
