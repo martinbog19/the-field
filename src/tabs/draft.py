@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from ..utils import prob2hex
+from ..utils import prob2hex, prob2hex_new
 
 
 def render_draft_tab(players, leagues, is_mobile):
@@ -27,16 +27,18 @@ def render_draft_tab(players, leagues, is_mobile):
         & merged["league"].isin(selected_leagues)
     ]
 
-    display_draft = display_draft[["pick", "round", "player_name", "team", "league", "prob"]].sort_values("pick").reset_index(drop=True)
-    display_draft = display_draft.rename(columns={"player_name": "player", "team": "selection", "prob": "live_probability"})
+    display_draft = display_draft[["pick", "round", "player_name", "team", "league", "prob", "prob_delta"]].sort_values("pick").reset_index(drop=True)
+    display_draft = display_draft.rename(columns={"player_name": "player", "team": "selection", "prob": "live_probability", "prob_delta": "live_probability_delta"})
     display_draft["live_probability"] = display_draft["live_probability"].apply(lambda x: f"{x:.1f}" if not pd.isna(x) else "")
+    display_draft["live_probability_delta"] = display_draft["live_probability_delta"].apply(lambda x: f"{x:+.1f}" if not pd.isna(x) and abs(x) >= 0.1 else "")
     display_draft.columns = [x.capitalize().replace("_", " ") for x in display_draft.columns]
-    display_draft = display_draft.rename(columns={"Live probability": "Live probability (%)"})
+    display_draft = display_draft.rename(columns={"Live probability": "Live probability (%)", "Live probability delta": "WoW change (%)"})
     display_draft["Pick"] = display_draft["Pick"].astype(int)
     display_draft["Round"] = display_draft["Round"].astype(int)
 
     display_draft_styled = display_draft.style
     display_draft_styled = display_draft_styled.map(lambda x: "color: #15eb80" if x == "The field" else "color: white", subset=["Selection"])
     display_draft_styled = display_draft_styled.map(prob2hex, subset=["Live probability (%)"])
+    display_draft_styled = display_draft_styled.map(prob2hex_new, subset=["WoW change (%)"])
 
     st.dataframe(display_draft_styled, hide_index=True)
