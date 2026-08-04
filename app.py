@@ -16,6 +16,8 @@ screen_width = streamlit_js_eval(js_expressions="screen.width", key="SCR")
 
 st.title("The field: Live tracking")
 
+st.progress(0.1, text="Loading data...")
+
 is_mobile = screen_width is not None and screen_width < 640
 device = "mobile" if is_mobile else "desktop"
 
