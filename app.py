@@ -18,7 +18,7 @@ title_col, dd_col = st.columns([3, 1])
 with title_col:
     st.title("The field: Live tracking")
 with dd_col:
-    room = st.selectbox("Select room:", ["Martin's friends", "Krish's friends"], index=0)
+    room = st.selectbox("Select room:", ["Martin's friends", "Krish's friends"], index=["martin", "krish"].index(st.query_params.get("room_id", "martin")))
     room_id = "martin" if room == "Martin's friends" else "krish"
 
 is_mobile = screen_width is not None and screen_width < 640
