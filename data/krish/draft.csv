@@ -1,0 +1,121 @@
+pick,round,team,player_name,league
+1,1,Los Angeles Dodgers,Matt,MLB
+2,1,New York Liberty,Nandha,WNBA
+3,1,Aryna Sabalenka,Ayush,US Open Women
+4,1,Jannik Sinner,Krishanu,US Open Men
+5,1,Carlos Alcaraz,Scott,US Open Men
+6,1,Kimi Antonelli,Zach,Abu Dhabi Grand Prix
+7,2,Manchester City,Matt,Premier League
+8,2,Oklahoma City Thunder,Nandha,NBA
+9,2,San Antonio Spurs,Ayush,NBA
+10,2,Arsenal,Krishanu,Premier League
+11,2,Las Vegas Aces,Scott,WNBA
+12,2,Minnesota Lynx,Zach,WNBA
+13,3,Manchester City,Matt,Champions League
+14,3,Lewis Hamilton,Nandha,Abu Dhabi Grand Prix
+15,3,Paris Saint-Germain,Ayush,Champions League
+16,3,Charles Leclerc,Krishanu,Abu Dhabi Grand Prix
+17,3,Elena Rybakina,Scott,US Open Women
+18,3,The field,Zach,US Open Women
+19,4,Coco Gauff,Matt,US Open Women
+20,4,Duke,Nandha,March Madness
+21,4,The field,Ayush,March Madness
+22,4,Iga Swiatek,Krishanu,US Open Women
+23,4,New York Yankees,Scott,MLB
+24,4,Liverpool,Zach,Premier League
+25,5,Bayern Munich,Matt,Champions League
+26,5,Carolina Hurricanes,Nandha,NHL
+27,5,Florida Panthers,Ayush,NHL
+28,5,Colorado Avalanche,Krishanu,NHL
+29,5,Manchester United,Scott,Premier League
+30,5,The field,Zach,NHL
+31,6,Illinois,Matt,March Madness
+32,6,Buffalo Bills,Nandha,NFL
+33,6,Atlanta Dream,Ayush,WNBA
+34,6,Florida,Krishanu,March Madness
+35,6,New York Knicks,Scott,NBA
+36,6,Ohio State,Zach,College Football
+37,7,Baltimore Ravens,Matt,NFL
+38,7,Texas,Nandha,College Football
+39,7,Chelsea,Ayush,Premier League
+40,7,Seattle Mariners,Krishanu,MLB
+41,7,UConn,Scott,March Madness
+42,7,Barcelona,Zach,Champions League
+43,8,Boston Celtics,Matt,NBA
+44,8,Vegas Golden Knights,Nandha,NHL
+45,8,Philadelphia Phillies,Ayush,MLB
+46,8,Edmonton Oilers,Krishanu,NHL
+47,8,Arsenal,Scott,Champions League
+48,8,Real Madrid,Zach,Champions League
+49,9,Washington Capitals,Matt,NHL
+50,9,Philadelphia 76ers,Nandha,NBA
+51,9,Oregon,Ayush,College Football
+52,9,Mirra Andreeva,Krishanu,US Open Women
+53,9,Tampa Bay Rays,Scott,MLB
+54,9,Milwaukee Brewers,Zach,MLB
+55,10,Georgia,Matt,College Football
+56,10,The field,Nandha,College Football
+57,10,Max Verstappen,Ayush,Abu Dhabi Grand Prix
+58,10,Alexander Zverev,Krishanu,US Open Men
+59,10,Seattle Seahawks,Scott,NFL
+60,10,Atlanta Braves,Zach,MLB
+61,11,Jessica Pegula,Matt,US Open Women
+62,11,New England Patriots,Nandha,NFL
+63,11,Ben Shelton,Ayush,US Open Men
+64,11,Indiana,Krishanu,College Football
+65,11,Tampa Bay Lightning,Scott,NHL
+66,11,The field,Zach,US Open Men
+67,12,George Russell,Matt,Abu Dhabi Grand Prix
+68,12,Michigan,Nandha,March Madness
+69,12,Philadelphia Eagles,Ayush,NFL
+70,12,Liverpool,Krishanu,Champions League
+71,12,Lando Norris,Scott,Abu Dhabi Grand Prix
+72,12,Denver Nuggets,Zach,NBA
+73,13,Novak Djokovic,Matt,US Open Men
+74,13,Manchester United,Nandha,Champions League
+75,13,Los Angeles Rams,Ayush,NFL
+76,13,Dallas Wings,Krishanu,WNBA
+77,13,U Miami,Scott,College Football
+78,13,Indiana Fever,Zach,WNBA
+79,14,Oscar Piastri,Matt,Abu Dhabi Grand Prix
+80,14,Chicago Cubs,Nandha,MLB
+81,14,Arizona,Ayush,March Madness
+82,14,Cleveland Cavaliers,Krishanu,NBA
+83,14,Golden State Valkyries,Scott,WNBA
+84,14,The field,Zach,NFL
+85,15,Tennessee,Matt,March Madness
+86,15,Aston Villa,Nandha,Premier League
+87,15,Inter Milan,Ayush,Champions League
+88,15,Kansas City Chiefs,Krishanu,NFL
+89,15,Indiana Pacers,Scott,NBA
+90,15,Arkansas,Zach,March Madness
+91,16,Detroit Lions,Matt,NFL
+92,16,Texas Rangers,Nandha,MLB
+93,16,Toronto Blue Jays,Ayush,MLB
+94,16,LSU,Krishanu,College Football
+95,16,Michigan State,Scott,March Madness
+96,16,Dallas Stars,Zach,NHL
+97,17,Amanda Anisimova,Matt,US Open Women
+98,17,Los Angeles Chargers,Nandha,NFL
+99,17,Toronto Raptors,Ayush,NBA
+100,17,Naomi Osaka,Krishanu,US Open Women
+101,17,Minnesota Wild,Scott,NHL
+102,17,Denver Broncos,Zach,NFL
+103,18,Texas,Matt,March Madness
+104,18,Miami Heat,Nandha,NBA
+105,18,Minnesota Timberwolves,Ayush,NBA
+106,18,San Francisco 49ers,Krishanu,NFL
+107,18,The field,Scott,Premier League
+108,18,The field,Zach,NBA
+109,19,Alabama,Matt,College Football
+110,19,USC,Nandha,March Madness
+111,19,Houston,Ayush,March Madness
+112,19,Texas Tech,Krishanu,College Football
+113,19,Texas A&M,Scott,College Football
+114,19,Notre Dame,Zach,College Football
+115,20,Crystal Palace,Matt,Premier League
+116,20,Anaheim Ducks,Nandha,NHL
+117,20,Chicago Bears,Ayush,NFL
+118,20,Montréal Canadiens,Krishanu,NHL
+119,20,Green Bay Packers,Scott,NFL
+120,20,The field,Zach,Champions League
