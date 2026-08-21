@@ -20,15 +20,13 @@ with dd_col:
     room = st.selectbox("Select room:", ["Martin's friends", "Krish's friends"], index=["martin", "krish"].index(st.query_params.get("room_id", "martin")))
     room_id = "martin" if room == "Martin's friends" else "krish"
 
-st.progress(0.1, text="Loading data...")
-
 is_mobile = screen_width is not None and screen_width < 640
 device = "mobile" if is_mobile else "desktop"
 
 with open(f"data/{room_id}/leagues.txt", "r") as f:
     room_leagues = f.read().splitlines()
 leagues = pd.read_csv(f"data/leagues.csv")
-leagues = leagues[leagues["league_name"].isin(room_leagues)].sort_values("end_date").reset_index(drop=True)
+leagues = leagues[leagues["league_name"].isin(room_leagues)]
 draft = pd.read_csv(f"data/{room_id}/draft.csv").sort_values("pick").reset_index(drop=True)
 players = sorted(draft["player_name"].unique().tolist())
 

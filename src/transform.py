@@ -13,7 +13,7 @@ def _compute_field_odds(df: pd.DataFrame) -> pd.DataFrame:
 
     return field_probs
 
-def merge_draft_odds(draft: pd.DataFrame, leagues: list[str], odds_provider: str) -> pd.DataFrame:
+def merge_draft_odds(draft: pd.DataFrame, leagues: pd.DataFrame, odds_provider: str) -> pd.DataFrame:
 
     odds_raw, not_found_leagues = fetch_odds_data(leagues, odds_provider)
 
