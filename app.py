@@ -8,7 +8,6 @@ from src.tabs.draft import render_draft_tab
 from src.tabs.xpoints import render_xpoints_tab
 from src.tabs.main import render_main_tab
 from src.transform import merge_draft_odds
-from src.utils import prob2hex
 
 
 st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
@@ -24,7 +23,10 @@ with dd_col:
 is_mobile = screen_width is not None and screen_width < 640
 device = "mobile" if is_mobile else "desktop"
 
-leagues = pd.read_csv(f"data/{room_id}/leagues.csv").sort_values("end_date").reset_index(drop=True)
+with open(f"data/{room_id}/leagues.txt", "r") as f:
+    room_leagues = f.read().splitlines()
+leagues = pd.read_csv(f"data/leagues.csv")
+leagues = leagues[leagues["league_name"].isin(room_leagues)].sort_values("end_date").reset_index(drop=True)
 draft = pd.read_csv(f"data/{room_id}/draft.csv").sort_values("pick").reset_index(drop=True)
 players = sorted(draft["player_name"].unique().tolist())
 
