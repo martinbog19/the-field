@@ -26,7 +26,7 @@ device = "mobile" if is_mobile else "desktop"
 with open(f"data/{room_id}/leagues.txt", "r") as f:
     room_leagues = f.read().splitlines()
 leagues = pd.read_csv(f"data/leagues.csv")
-leagues = leagues[leagues["league_name"].isin(room_leagues)].sort_values("end_date").reset_index(drop=True)
+leagues = leagues[leagues["league_name"].isin(room_leagues)]
 draft = pd.read_csv(f"data/{room_id}/draft.csv").sort_values("pick").reset_index(drop=True)
 players = sorted(draft["player_name"].unique().tolist())
 

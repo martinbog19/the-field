@@ -1,16 +1,16 @@
-league_name,kalshi_ticker,polymarket_slug,espn_endpoint,end_date
-NBA,kxnba-27,nba-2027-champion,,2027-06-01
-NHL,kxnhl-27,nhl-2027-champion-20260612185656162,,2027-05-01
-NFL,kxsb-27,pro-football-2027-champion-20260729185915366,,2027-02-01
-MLB,kxmlb-26,mlb-world-series-champion-2026,,2026-10-01
-WNBA,kxwnba-26,wnba-2026-champion-464,,2026-10-01
-Premier League,kxpremierleague-27,epl-2027-champion-20260701200428749,,2027-04-01
-US Open Men,kxatp-26uso,2026-mens-us-open-winner-tennis,,2026-09-01
-US Open Women,kxwta-26uso,2026-womens-us-open-winner-tennis,,2026-09-01
-College Football,kxncaaf-27,ncaa-football-2026-national-champion,,2027-01-01
-Abu Dhabi Grand Prix,,,,2026-12-01
-March Madness,kxmarmad-27,,sports/basketball/leagues/mens-college-basketball/seasons/2027/futures,2027-04-01
-Tour de France,,,,2027-07-01
-Six Nations,,,,2027-02-01
-World Darts Championship,,,,2027-01-01
-Champions League,kxucl-27,uefa-champions-league-2027-champion-20260701202025549,,2027-05-01
+league_name,kalshi_ticker,polymarket_slug,espn_endpoint,start_date,end_date
+NBA,kxnba-27,nba-2027-champion,,2026-10-20,2027-06-19
+NHL,kxnhl-27,nhl-2027-champion-20260612185656162,,2026-09-29,2027-06-14
+NFL,kxsb-27,pro-football-2027-champion-20260729185915366,,2026-09-09,2027-02-14
+MLB,kxmlb-26,mlb-world-series-champion-2026,,2026-03-25,2026-10-31
+WNBA,kxwnba-26,wnba-2026-champion-464,,2026-05-08,2026-10-17
+Premier League,kxpremierleague-27,epl-2027-champion-20260701200428749,,2026-08-21,2027-05-30
+US Open Men,kxatp-26uso,2026-mens-us-open-winner-tennis,,2026-08-30,2026-09-13
+US Open Women,kxwta-26uso,2026-womens-us-open-winner-tennis,,2026-08-30,2026-09-12
+College Football,kxncaaf-27,ncaa-football-2026-national-champion,,2026-08-29,2027-01-27
+Abu Dhabi Grand Prix,,,,2026-12-04,2026-12-06
+March Madness,kxmarmad-27,,sports/basketball/leagues/mens-college-basketball/seasons/2027/futures,2027-03-14,2027-04-05
+Tour de France,,,,2027-07-02,2027-07-25
+Six Nations,,,,2027-02-05,2027-03-13
+World Darts Championship,,,,2026-12-11,2027-01-03
+Champions League,kxucl-27,uefa-champions-league-2027-champion-20260701202025549,,2026-09-08,2027-06-05

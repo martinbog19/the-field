@@ -2,9 +2,13 @@ import streamlit as st
 import pandas as pd
 import os
 import base64
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
 from ..utils import prob2hex
+
+
+_TODAY = datetime.now().date()
 
 
 @st.cache_data
@@ -20,6 +24,38 @@ def _arrow_img_tag(delta):
         encoded = base64.b64encode(f.read()).decode()
     return f"<img src='data:image/png;base64,{encoded}' style='width:12px;vertical-align:middle;'/>"
 
+def _yyddmm_between(start_date: date, end_date: date) -> str:
+    delta = relativedelta(end_date, start_date)
+    output = ""
+    if delta.years > 0:
+        output += f"{delta.years}y"
+    if delta.months > 0:
+        output += f"{delta.months}m"
+    output += f"{delta.days}d"
+    return output if output else "0d"
+
+def _progress(start_date: str, end_date: str) -> tuple[float, str, int]:
+    end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+
+    if _TODAY > end_date:
+        return 1.0, "Completed"
+    elif start_date > _TODAY:
+        time_to_start = _yyddmm_between(_TODAY, start_date)
+        return 0.0, f"Starting in {time_to_start}"
+    elif start_date <= _TODAY <= end_date:
+        total_days = (end_date - start_date).days
+        elapsed_days = (_TODAY - start_date).days
+        progress_pct = elapsed_days / total_days
+        return progress_pct, f"{_yyddmm_between(_TODAY, end_date)} left"
+
+
+
+
+
+
+
+
 
 def render_main_tab(players, leagues, is_mobile):
 
@@ -32,7 +68,7 @@ def render_main_tab(players, leagues, is_mobile):
         settings = st.columns([2, 5], gap="medium", vertical_alignment="top")
 
     with settings[0]:
-        selected_players = st.pills("Players", players, key="players_pills", selection_mode="multi", width="stretch")
+        selected_players = st.pills("Players", players, key="players_pills", selection_mode="multi")
         if len(selected_players) == 0:
             hide_unpicked = st.toggle("Hide unpicked teams/players", value=True, key="hide_unpicked")
         else:
@@ -52,7 +88,14 @@ def render_main_tab(players, leagues, is_mobile):
     ]
 
     columns = st.columns(3 if not is_mobile else 1, gap="medium", vertical_alignment="top")
-    leagues_iterator = leagues.copy()[leagues["league_name"].isin(selected_leagues)].sort_values("end_date").reset_index(drop=True)
+
+    leagues["started"] = pd.to_datetime(leagues["start_date"]) <= pd.to_datetime(_TODAY)
+    leagues["sort_date"] = leagues.apply(lambda x: x["end_date"] if x["started"] else x["start_date"], axis=1)
+    leagues_iterator = (
+        leagues.copy()[leagues["league_name"].isin(selected_leagues)]
+        .sort_values(["started", "sort_date"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
     for i, league in leagues_iterator.iterrows():
 
         league_name = league["league_name"]
@@ -60,6 +103,8 @@ def render_main_tab(players, leagues, is_mobile):
 
         picks = merged.copy()[merged["league"] == league_name].reset_index(drop=True)
         picks = picks.sort_values(["prob", "pick"], ascending=[False, True])
+
+        progress_pct, progress_msg = _progress(league["start_date"], league["end_date"])
 
         with columns[i % 3 if not is_mobile else 0]:
 
@@ -74,20 +119,23 @@ def render_main_tab(players, leagues, is_mobile):
                         with st.container():
                             st.write(f"**{league['league_name']}**")
                             st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
-                        if os.path.exists(logo_path):
-                            st.image(logo_path, width=48)
+                        # if os.path.exists(logo_path):
+                        #     st.image(logo_path, width=48)
                 else:
-                    c1, c2 = st.columns([3, 1])
-                    c1.write(f"**{league['league_name']}**")
-                    c1.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
-                    if os.path.exists(logo_path):
-                        c2.image(logo_path, width=96)
+                    c1, c2 = st.columns([5, 3])
+                    with c1.container(horizontal=True, vertical_alignment="center", gap="xxsmall"):
+                        # if os.path.exists(logo_path):
+                        #     st.image(logo_path, width=48)
+                        st.write(f"**{league['league_name']}**")
 
+                    c2.progress(progress_pct, text=progress_msg)
+
+
+                st.space("xsmall")
+                
                 if picks["prob"].isna().all():
                     st.warning(f"No {odds_provider} odds yet available.")
                     st.space("xsmall")
-                else:
-                    st.space("small")
 
                 for _, pick in picks.iterrows():
                     accent_color = "#15eb80" if pick["team"] == "The field" else "white"
