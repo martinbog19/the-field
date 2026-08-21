@@ -8,21 +8,28 @@ from src.tabs.draft import render_draft_tab
 from src.tabs.xpoints import render_xpoints_tab
 from src.tabs.main import render_main_tab
 from src.transform import merge_draft_odds
-from src.utils import prob2hex
 
 
 st.set_page_config(page_title="The field", page_icon="🏈", layout="wide")
 screen_width = streamlit_js_eval(js_expressions="screen.width", key="SCR")
 
-st.title("The field: Live tracking")
+title_col, dd_col = st.columns([3, 1])
+with title_col:
+    st.title("The field: Live tracking")
+with dd_col:
+    room = st.selectbox("Select room:", ["Martin's friends", "Krish's friends"], index=["martin", "krish"].index(st.query_params.get("room_id", "martin")))
+    room_id = "martin" if room == "Martin's friends" else "krish"
 
 st.progress(0.1, text="Loading data...")
 
 is_mobile = screen_width is not None and screen_width < 640
 device = "mobile" if is_mobile else "desktop"
 
-leagues = pd.read_csv("data/leagues.csv").sort_values("end_date").reset_index(drop=True)
-draft = pd.read_csv("data/Sports Draft - Draft.csv").sort_values("pick").reset_index(drop=True)
+with open(f"data/{room_id}/leagues.txt", "r") as f:
+    room_leagues = f.read().splitlines()
+leagues = pd.read_csv(f"data/leagues.csv")
+leagues = leagues[leagues["league_name"].isin(room_leagues)].sort_values("end_date").reset_index(drop=True)
+draft = pd.read_csv(f"data/{room_id}/draft.csv").sort_values("pick").reset_index(drop=True)
 players = sorted(draft["player_name"].unique().tolist())
 
 odds_refresh_container = st.container(horizontal=True, vertical_alignment="bottom")
@@ -31,13 +38,18 @@ with odds_refresh_container:
     if st.button("↻ Refresh", key="refresh_odds", type="tertiary", help=f"Refresh {odds_provider} data"):
         st.session_state.pop("merged", None)
 
-if "merged" not in st.session_state or st.session_state.get("odds_provider") != odds_provider:
+if (
+    "merged" not in st.session_state
+    or st.session_state.get("odds_provider") != odds_provider
+    or st.session_state.get("room_id") != room_id
+):
     with odds_refresh_container:
         st.session_state["merged"] = merge_draft_odds(draft, leagues, odds_provider)
         if "last_refreshed" in st.session_state:
             st.toast(f"Successfully pulled {odds_provider} data!", duration=3)
         st.session_state["last_refreshed"] = datetime.now()
         st.session_state["odds_provider"] = odds_provider
+        st.session_state["room_id"] = room_id
 
 
 merged = st.session_state["merged"].copy()
