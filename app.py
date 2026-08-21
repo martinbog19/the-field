@@ -21,7 +21,8 @@ with dd_col:
     room_id = "martin" if room == "Martin's friends" else "krish"
 
 is_mobile = screen_width is not None and screen_width < 640
-device = "mobile" if is_mobile else "desktop"
+is_mobile = True
+
 
 with open(f"data/{room_id}/leagues.txt", "r") as f:
     room_leagues = f.read().splitlines()

@@ -50,13 +50,6 @@ def _progress(start_date: str, end_date: str) -> tuple[float, str, int]:
         return progress_pct, f"{_yyddmm_between(_TODAY, end_date)} left"
 
 
-
-
-
-
-
-
-
 def render_main_tab(players, leagues, is_mobile):
 
     merged = st.session_state["merged"].copy()
@@ -112,13 +105,21 @@ def render_main_tab(players, leagues, is_mobile):
             with container:
 
                 if is_mobile:
-                    if i > 0:
+                    if i > -1:
                         st.divider()
 
-                    with st.container(horizontal=True, horizontal_alignment="distribute", vertical_alignment="center"):
-                        with st.container():
-                            st.write(f"**{league['league_name']}**")
-                            st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
+                    # c1, c2 = st.columns([1, 10])
+                    # with c1.container(horizontal=True, vertical_alignment="center", gap="xxsmall"):
+                        # if os.path.exists(logo_path):
+                        #     st.image(logo_path, width=48)
+                    st.write(f"**{league['league_name']}**")
+                    c1, _ = st.columns(2)
+                    c1.progress(progress_pct, text=progress_msg)
+
+                    # with st.container(horizontal=True, horizontal_alignment="distribute", vertical_alignment="center"):
+                    #     with st.container():
+                    #         st.write(f"**{league['league_name']}**")
+                    #         st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
                         # if os.path.exists(logo_path):
                         #     st.image(logo_path, width=48)
                 else:
