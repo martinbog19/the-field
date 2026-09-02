@@ -3,12 +3,14 @@ import pandas as pd
 import os
 import base64
 from datetime import datetime, date
+from zoneinfo import ZoneInfo
 from dateutil.relativedelta import relativedelta
 
 from ..utils import prob2hex
 
 
-_TODAY = datetime.now().date()
+def _today() -> date:
+    return datetime.now(ZoneInfo("America/New_York")).date()
 
 
 @st.cache_data
@@ -38,16 +40,17 @@ def _progress(start_date: str, end_date: str) -> tuple[float, str, int]:
     end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
     start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
 
-    if _TODAY > end_date:
+    today = _today()
+    if today > end_date:
         return 1.0, "Completed"
-    elif start_date > _TODAY:
-        time_to_start = _yyddmm_between(_TODAY, start_date)
+    elif start_date > today:
+        time_to_start = _yyddmm_between(today, start_date)
         return 0.0, f"Starting in {time_to_start}"
-    elif start_date <= _TODAY <= end_date:
+    elif start_date <= today <= end_date:
         total_days = (end_date - start_date).days
-        elapsed_days = (_TODAY - start_date).days
+        elapsed_days = (today - start_date).days
         progress_pct = elapsed_days / total_days
-        return progress_pct, f"{_yyddmm_between(_TODAY, end_date)} left"
+        return progress_pct, f"{_yyddmm_between(today, end_date)} left"
 
 
 def render_main_tab(players, leagues, is_mobile):
@@ -82,7 +85,7 @@ def render_main_tab(players, leagues, is_mobile):
 
     columns = st.columns(3 if not is_mobile else 1, gap="medium", vertical_alignment="top")
 
-    leagues["started"] = pd.to_datetime(leagues["start_date"]) <= pd.to_datetime(_TODAY)
+    leagues["started"] = pd.to_datetime(leagues["start_date"]) <= pd.to_datetime(_today())
     leagues["sort_date"] = leagues.apply(lambda x: x["end_date"] if x["started"] else x["start_date"], axis=1)
     leagues_iterator = (
         leagues.copy()[leagues["league_name"].isin(selected_leagues)]
