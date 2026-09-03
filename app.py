@@ -53,7 +53,7 @@ if (
 merged = st.session_state["merged"].copy()
 
 
-tab_main, tab_xp, tab_draft, tab_trends = st.tabs(["Live odds", "xPoints", "Draft", "Trends"])
+tab_main, tab_xp, tab_draft, tab_trends, tab_dev = st.tabs(["Live odds", "xPoints", "Draft", "Trends", "Dev"])
 
 with tab_main:
     render_main_tab(players, leagues, is_mobile)
@@ -90,3 +90,40 @@ with tab_trends:
         for _, pick in cold.iterrows():
             prob = f"{pick['prob']:.1f}%" if not pd.isna(pick['prob']) else "--"
             st.metric(label=f"{pick['player_name']}: **{pick['team']}** ({pick['league']})", value=prob, delta=f"{pick['prob_delta']:+.1f}%")
+
+
+with tab_dev:
+
+    _DRAFT_DAY = datetime(2026, 7, 15)
+
+    merged = st.session_state["merged"].copy()
+
+    selected_player = st.selectbox("Select a player", players, index=None)
+    if not selected_player:
+        st.info("Please select a player to view details.", icon="⚠️")
+        st.stop()
+    
+    player_data = merged[merged["player_name"] == selected_player]
+    market_ids = [x for x in player_data["yes_token_id"] if not pd.isna(x)]
+
+    import requests
+
+    url = "https://clob.polymarket.com/batch-prices-history"
+
+    body = {
+        "markets": market_ids[:20],
+        "start_ts": int(_DRAFT_DAY.timestamp()),
+        "fidelity": 1440,
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=body, headers=headers)
+
+    history = pd.concat([pd.DataFrame(x) for _, x in response.json()["history"].items()], ignore_index=True)
+    history["date"] = pd.to_datetime(history["t"], unit="s").dt.date
+
+    history = history.groupby("date")["p"].sum().reset_index()
+    st.dataframe(history)
+
+    #Plot the history
+    st.line_chart(history.set_index("date")["p"])
