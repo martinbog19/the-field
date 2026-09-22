@@ -90,3 +90,44 @@ with tab_trends:
         for _, pick in cold.iterrows():
             prob = f"{pick['prob']:.1f}%" if not pd.isna(pick['prob']) else "--"
             st.metric(label=f"{pick['player_name']}: **{pick['team']}** ({pick['league']})", value=prob, delta=f"{pick['prob_delta']:+.1f}%")
+
+
+# with tab_dev:
+
+#     _DRAFT_DAY = datetime(2026, 7, 15)
+
+#     merged = st.session_state["merged"].copy()
+
+#     st.dataframe(merged)
+
+#     selected_market = st.selectbox("Select a team", merged["team"], index=None)
+    
+#     market_id = merged[merged["team"] == selected_market].iloc[0]["yes_token_id"]
+    
+#     if not selected_market or pd.isna(market_id):
+#         st.info("Please select a team to view details.", icon="⚠️")
+#         st.stop()
+
+#     import requests
+
+#     url = "https://clob.polymarket.com/prices-history"
+
+#     body = {
+#         "market": market_id,
+#         "startTs": int(_DRAFT_DAY.timestamp()),
+#         "fidelity": 1440,
+#     }
+#     headers = {"Content-Type": "application/json"}
+
+#     response = requests.post(url, json=body, headers=headers)
+
+#     st.write(response.json())
+
+#     history = pd.concat([pd.DataFrame(x) for _, x in response.json()["history"].items()], ignore_index=True)
+#     history["date"] = pd.to_datetime(history["t"], unit="s").dt.date
+
+#     history = history.groupby("date")["p"].sum().reset_index()
+#     st.dataframe(history)
+
+#     #Plot the history
+#     st.line_chart(history.set_index("date")["p"])

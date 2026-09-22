@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import os
+import json
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket
@@ -73,7 +74,7 @@ def get_polymarket_data(event_slug: str):
     except (KeyError, ValueError):
         raise NotFoundError(f"Failed to fetch markets for event slug: {event_slug}")
 
-    teams, probs, prob_deltas, slugs, resolved = [], [], [], [], []
+    teams, probs, prob_deltas, slugs, resolved, yes_token_ids = [], [], [], [], [], []
     for market in markets:
 
         team = market["groupItemTitle"].strip()
@@ -91,6 +92,8 @@ def get_polymarket_data(event_slug: str):
         prob_deltas.append(prob_delta)
         slugs.append(market["slug"])
         resolved.append(market.get("umaResolutionStatus", "") == "resolved")
+        token_ids = json.loads(market["clobTokenIds"])
+        yes_token_ids.append(token_ids[0])
 
     df = pd.DataFrame(
         {
@@ -98,6 +101,7 @@ def get_polymarket_data(event_slug: str):
             "prob": probs,
             "event_slug": slugs,
             "resolved": resolved,
+            "yes_token_id": yes_token_ids,
         }
     )
     prob_sum = df["prob"].sum()

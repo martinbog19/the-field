@@ -86,10 +86,11 @@ def render_main_tab(players, leagues, is_mobile):
     columns = st.columns(3 if not is_mobile else 1, gap="medium", vertical_alignment="top")
 
     leagues["started"] = pd.to_datetime(leagues["start_date"]) <= pd.to_datetime(_today())
+    leagues["completed"] = pd.to_datetime(leagues["end_date"]) <= pd.to_datetime(_today())
     leagues["sort_date"] = leagues.apply(lambda x: x["end_date"] if x["started"] else x["start_date"], axis=1)
     leagues_iterator = (
         leagues.copy()[leagues["league_name"].isin(selected_leagues)]
-        .sort_values(["started", "sort_date"], ascending=[False, True])
+        .sort_values(["completed", "started", "sort_date"], ascending=[True, False, True])
         .reset_index(drop=True)
     )
     for i, league in leagues_iterator.iterrows():
@@ -97,8 +98,8 @@ def render_main_tab(players, leagues, is_mobile):
         league_name = league["league_name"]
         logo_path = f"assets/logos/{league_name.lower().replace(' ', '_')}.png"
 
-        picks = merged.copy()[merged["league"] == league_name].reset_index(drop=True)
-        picks = picks.sort_values(["prob", "pick"], ascending=[False, True])
+        picks = merged.copy()[merged["league"] == league_name]
+        picks = picks.sort_values(["prob", "pick"], ascending=[False, True]).reset_index(drop=True)
 
         progress_pct, progress_msg = _progress(league["start_date"], league["end_date"])
 
@@ -141,18 +142,25 @@ def render_main_tab(players, leagues, is_mobile):
                     st.warning(f"No {odds_provider} odds yet available.")
                     st.space("xsmall")
 
-                for _, pick in picks.iterrows():
-                    accent_color = "#15eb80" if pick["team"] == "The field" else "white"
+                for i, pick in picks.iterrows():
+                    accent_color = "#15eb80" if (pick["team"] == "The field") and not league["completed"] else "white"
                     prob_color = prob2hex(pick["prob"])
                     prob = f"{pick['prob']:.1f}%" if not pd.isna(pick['prob']) else "--"
                         
                     arrow = _arrow_img_tag(pick["prob_delta"])
 
+                    player_color = "white"
+
+                    if league["completed"]:
+                        accent_color = "#FFD700" if i == 0 else "#5c5c5c"
+                        player_color = "#FFD700" if i == 0 else "#5c5c5c"
+                        prob_color = "#FFD700" if i == 0 else "#5c5c5c"
+
                     st.markdown(
                         f"""<div style='display:flex;align-items:center;gap:36px;padding:6px 0;'>
                         <span style='flex:3;min-width:0;color:{accent_color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>{pick['team']}</span>
-                        <span style='flex:1;text-align:left;white-space:nowrap;'>{pick['player_name']}</span>
-                        <span style='flex:1;display:inline-flex;align-items:center;justify-content:flex-end;gap:6px;white-space:nowrap;'>{arrow}<span style='{prob_color}'>{prob}</span></span>
+                        <span style='flex:1;text-align:left;white-space:nowrap;color:{player_color};'>{pick['player_name']}</span>
+                        <span style='flex:1;display:inline-flex;align-items:center;justify-content:flex-end;gap:6px;white-space:nowrap;'>{arrow}<span style='color:{prob_color}'>{prob}</span></span>
                         </div>""",
                         unsafe_allow_html=True,
                     )
