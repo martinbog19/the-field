@@ -53,7 +53,7 @@ if (
 merged = st.session_state["merged"].copy()
 
 
-tab_main, tab_xp, tab_draft, tab_trends, tab_dev = st.tabs(["Live odds", "xPoints", "Draft", "Trends", "Dev"])
+tab_main, tab_xp, tab_draft, tab_trends = st.tabs(["Live odds", "xPoints", "Draft", "Trends"])
 
 with tab_main:
     render_main_tab(players, leagues, is_mobile)
@@ -92,38 +92,42 @@ with tab_trends:
             st.metric(label=f"{pick['player_name']}: **{pick['team']}** ({pick['league']})", value=prob, delta=f"{pick['prob_delta']:+.1f}%")
 
 
-with tab_dev:
+# with tab_dev:
 
-    _DRAFT_DAY = datetime(2026, 7, 15)
+#     _DRAFT_DAY = datetime(2026, 7, 15)
 
-    merged = st.session_state["merged"].copy()
+#     merged = st.session_state["merged"].copy()
 
-    selected_player = st.selectbox("Select a player", players, index=None)
-    if not selected_player:
-        st.info("Please select a player to view details.", icon="⚠️")
-        st.stop()
+#     st.dataframe(merged)
+
+#     selected_market = st.selectbox("Select a team", merged["team"], index=None)
     
-    player_data = merged[merged["player_name"] == selected_player]
-    market_ids = [x for x in player_data["yes_token_id"] if not pd.isna(x)]
+#     market_id = merged[merged["team"] == selected_market].iloc[0]["yes_token_id"]
+    
+#     if not selected_market or pd.isna(market_id):
+#         st.info("Please select a team to view details.", icon="⚠️")
+#         st.stop()
 
-    import requests
+#     import requests
 
-    url = "https://clob.polymarket.com/batch-prices-history"
+#     url = "https://clob.polymarket.com/prices-history"
 
-    body = {
-        "markets": market_ids[:20],
-        "start_ts": int(_DRAFT_DAY.timestamp()),
-        "fidelity": 1440,
-    }
-    headers = {"Content-Type": "application/json"}
+#     body = {
+#         "market": market_id,
+#         "startTs": int(_DRAFT_DAY.timestamp()),
+#         "fidelity": 1440,
+#     }
+#     headers = {"Content-Type": "application/json"}
 
-    response = requests.post(url, json=body, headers=headers)
+#     response = requests.post(url, json=body, headers=headers)
 
-    history = pd.concat([pd.DataFrame(x) for _, x in response.json()["history"].items()], ignore_index=True)
-    history["date"] = pd.to_datetime(history["t"], unit="s").dt.date
+#     st.write(response.json())
 
-    history = history.groupby("date")["p"].sum().reset_index()
-    st.dataframe(history)
+#     history = pd.concat([pd.DataFrame(x) for _, x in response.json()["history"].items()], ignore_index=True)
+#     history["date"] = pd.to_datetime(history["t"], unit="s").dt.date
 
-    #Plot the history
-    st.line_chart(history.set_index("date")["p"])
+#     history = history.groupby("date")["p"].sum().reset_index()
+#     st.dataframe(history)
+
+#     #Plot the history
+#     st.line_chart(history.set_index("date")["p"])
