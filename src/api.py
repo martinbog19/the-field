@@ -3,11 +3,16 @@ import requests
 import pandas as pd
 import os
 import json
+from datetime import datetime, timedelta, timezone
 
 from .name_maps.kalshi import name_map as nm_kalshi
 from .name_maps.polymarket import name_map as nm_polymarket
 
 REQUEST_TIMEOUT = 10
+
+
+def _now_utc() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class NotFoundError(Exception):
@@ -58,6 +63,8 @@ def get_kalshi_data(event_ticker: str):
 
 def get_polymarket_data(event_slug: str):
 
+    now = _now_utc()
+
     if pd.isna(event_slug):
         raise NotFoundError(f"No markets available for event slug: {event_slug}")
     
@@ -89,6 +96,11 @@ def get_polymarket_data(event_slug: str):
         # prob = float(market["outcomePrices"].lstrip("[").split(",")[0].strip('"'))
         probs.append(prob)
         prob_delta = float(market.get("oneWeekPriceChange", 0.0))
+        closed_time = market.get("closedTime", None)
+        if closed_time is not None:
+            closed_time_plus_week = datetime.fromisoformat(closed_time) + timedelta(weeks=1)
+            if now > closed_time_plus_week:
+                prob_delta = 0.0
         prob_deltas.append(prob_delta)
         slugs.append(market["slug"])
         resolved.append(market.get("umaResolutionStatus", "") == "resolved")

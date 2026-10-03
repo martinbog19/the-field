@@ -9,8 +9,11 @@ from dateutil.relativedelta import relativedelta
 from ..utils import prob2hex
 
 
+def _now() -> datetime:
+    return datetime.now(ZoneInfo("America/New_York"))
+
 def _today() -> date:
-    return datetime.now(ZoneInfo("America/New_York")).date()
+    return _now().date()
 
 
 @st.cache_data
@@ -87,6 +90,7 @@ def render_main_tab(players, leagues, is_mobile):
 
     leagues["started"] = pd.to_datetime(leagues["start_date"]) <= pd.to_datetime(_today())
     leagues["completed"] = pd.to_datetime(leagues["end_date"]) <= pd.to_datetime(_today())
+    leagues["not_started"] = pd.to_datetime(leagues["start_date"]) > pd.to_datetime(_today())
     leagues["sort_date"] = leagues.apply(lambda x: x["end_date"] if x["started"] else x["start_date"], axis=1)
     leagues_iterator = (
         leagues.copy()[leagues["league_name"].isin(selected_leagues)]
@@ -96,6 +100,7 @@ def render_main_tab(players, leagues, is_mobile):
     for i, league in leagues_iterator.iterrows():
 
         league_name = league["league_name"]
+        manual_odds = league["manual_odds"]
         logo_path = f"assets/logos/{league_name.lower().replace(' ', '_')}.png"
 
         picks = merged.copy()[merged["league"] == league_name]
@@ -116,22 +121,24 @@ def render_main_tab(players, leagues, is_mobile):
                     # with c1.container(horizontal=True, vertical_alignment="center", gap="xxsmall"):
                         # if os.path.exists(logo_path):
                         #     st.image(logo_path, width=48)
-                    st.write(f"**{league['league_name']}**")
+                    asterisk = "*" if manual_odds else ""
+                    st.write(f"**{league['league_name']}**{asterisk}")
                     c1, _ = st.columns(2)
                     c1.progress(progress_pct, text=progress_msg)
 
                     # with st.container(horizontal=True, horizontal_alignment="distribute", vertical_alignment="center"):
-                    #     with st.container():
-                    #         st.write(f"**{league['league_name']}**")
+                    #     with st.container():      
+                    # st.write(f"**{league['league_name']}**")
                     #         st.caption(datetime.strftime(datetime.strptime(league["end_date"], "%Y-%m-%d"), "%B %Y"))
                         # if os.path.exists(logo_path):
                         #     st.image(logo_path, width=48)
                 else:
                     c1, c2 = st.columns([5, 3])
                     with c1.container(horizontal=True, vertical_alignment="center", gap="xxsmall"):
-                        # if os.path.exists(logo_path):
+                        # if os.path.exists(logo_path)
                         #     st.image(logo_path, width=48)
-                        st.write(f"**{league['league_name']}**")
+                        asterisk = "*" if manual_odds else ""
+                        st.write(f"**{league['league_name']}**{asterisk}")
 
                     c2.progress(progress_pct, text=progress_msg)
 
@@ -152,9 +159,9 @@ def render_main_tab(players, leagues, is_mobile):
                     player_color = "white"
 
                     if league["completed"]:
-                        accent_color = "#FFD700" if i == 0 else "#5c5c5c"
-                        player_color = "#FFD700" if i == 0 else "#5c5c5c"
-                        prob_color = "#FFD700" if i == 0 else "#5c5c5c"
+                        accent_color = "#FFD700" if pick["prob"] > 99 else "#5c5c5c"
+                        player_color = "#FFD700" if pick["prob"] > 99 else "#5c5c5c"
+                        prob_color = "#FFD700" if pick["prob"] > 99 else "#5c5c5c"
 
                     st.markdown(
                         f"""<div style='display:flex;align-items:center;gap:36px;padding:6px 0;'>
