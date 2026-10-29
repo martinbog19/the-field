@@ -2,7 +2,7 @@ league_name,kalshi_ticker,polymarket_slug,start_date,end_date,manual_odds
 NBA,kxnba-27,nba-2027-champion,2026-10-20,2027-06-19,False
 NHL,kxnhl-27,nhl-2027-champion-20260612185656162,2026-09-29,2027-06-14,False
 NFL,kxsb-27,pro-football-2027-champion-20260729185915366,2026-09-09,2027-02-14,False
-MLB,kxmlb-26,mlb-world-series-champion-2026,2026-03-25,2026-10-31,False
+MLB,kxmlb-26,mlb-world-series-champion-2026,2026-03-25,2026-10-28,False
 WNBA,kxwnba-26,wnba-2026-champion-464,2026-05-08,2026-10-31,False
 Premier League,kxpremierleague-27,epl-2027-champion-20260701200428749,2026-08-21,2027-05-30,False
 US Open Men,kxatp-26uso,2026-mens-us-open-winner-tennis,2026-08-30,2026-09-13,False
