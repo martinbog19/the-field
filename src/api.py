@@ -85,7 +85,7 @@ def get_polymarket_data(event_slug: str):
     for market in markets:
 
         team = market["groupItemTitle"].strip()
-        if team.startswith("Team ") or team.startswith("Player ") or team == "Other":
+        if team.startswith("Team ") or team.startswith("Player ") or team.startswith("Driver ") or team == "Other":
             continue
         teams.append(team)
 
